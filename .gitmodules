@@ -1,0 +1,15 @@
+[submodule "TribleZ/Gitvender/imGui"]
+	path = TribleZ/Gitvender/imGui
+	url = https://github.com/ocornut/imgui
+[submodule "TribleZ/Gitvender/glm"]
+	path = TribleZ/Gitvender/glm
+	url = https://github.com/g-truc/glm
+[submodule "TribleZ/Gitvender/ImGui"]
+	path = TribleZ/Gitvender/ImGui
+	url = https://github.com/ocornut/imgui/tree/docking
+[submodule "TribleZ/Gitvender/spdlog"]
+	path = TribleZ/Gitvender/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "TribleZ/Gitvender/yaml_cpp"]
+	path = TribleZ/Gitvender/yaml_cpp
+	url = https://github.com/TheCherno/yaml-cpp

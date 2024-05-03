@@ -1,0 +1,56 @@
+Scene: Scene's name
+Entities:
+  - Entity: 15151515151
+    TagComponent:
+      Tag: Square
+    TransformComponent:
+      Translation: [111, -70, 283]
+      Rotation: [-0.890117884, 0.925024509, -3.12413931]
+      Scale: [200, 200, 200]
+    SpriteRendererComponent:
+      Color: [0.203921571, 0.294117659, 0.882352948, 0.835294127]
+  - Entity: 15151515151
+    TagComponent:
+      Tag: SecondSquare
+    TransformComponent:
+      Translation: [52, 34, 252]
+      Rotation: [0, 0, 0]
+      Scale: [514, 569, 200]
+    SpriteRendererComponent:
+      Color: [0.800000012, 0.300000012, 0.200000003, 1]
+  - Entity: 15151515151
+    TagComponent:
+      Tag: Main_Camera
+    CameraComponent:
+      CameraProps:
+        ProjectionType: 0
+        OrthoGraphicSize: 720
+        OrthoGraphicNearClip: -1
+        OrthoGraphicFarClip: 1
+        PerspectiveFOV: 0.785398185
+        PerspectiveNearClip: 0.00999999978
+        PerspectiveFarClip: 10000
+      Primary_flag: true
+      FixedAspectRatio_flag: false
+    TransformComponent:
+      Translation: [0, 0, 1230]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+  - Entity: 15151515151
+    TagComponent:
+      Tag: Object_Camera
+    CameraComponent:
+      CameraProps:
+        ProjectionType: 1
+        OrthoGraphicSize: 720
+        OrthoGraphicNearClip: -1
+        OrthoGraphicFarClip: 1
+        PerspectiveFOV: 0.785398185
+        PerspectiveNearClip: 0.00999999978
+        PerspectiveFarClip: 10000
+      Primary_flag: false
+      FixedAspectRatio_flag: false
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]

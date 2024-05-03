@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Tool">
+      <UniqueIdentifier>{43068D7C-2F3D-8E0D-D829-7410C43F0A0F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ParticleSystem.cpp" />
+    <ClCompile Include="src\Random.cpp" />
+    <ClCompile Include="src\SandBox_App.cpp" />
+    <ClCompile Include="src\SandBox2D.cpp" />
+    <ClCompile Include="src\Example_Layer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ParticleSystem.h" />
+    <ClInclude Include="src\Random.h" />
+    <ClInclude Include="src\SandBox2D.h" />
+    <ClInclude Include="src\Example_Layer.h" />
+  </ItemGroup>
+</Project>

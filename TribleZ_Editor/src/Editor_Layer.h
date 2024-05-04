@@ -28,24 +28,29 @@ namespace TribleZ
 
 		OrthoGraphicCameraContraller CameraController;
 
+#ifdef DELETE_CODE
 		//实体
 		Entity m_Square;
 		Entity m_second_Square;
 		Entity Camera_Entity;
 		Entity Obj_Camera;
 		bool main_cam = true;
-
+#endif
+		//粒子系统
 		ParticleSystem m_ParticleSystem;
 		ParticleProps m_Particle;
-
+		//子模块
 		std::unordered_map<char, Ref<TribleZ::SubTexture2D>> m_SubTexMap;
+		//视口大小
 		glm::vec2 m_ViewSize;
 		uint32_t Map_Width, Map_Height;
-
-		SceneHierarchyPanel m_ScenePanel;
-
+		//画面面板
+		SceneHierarchyPanel m_SceneHierarchyPanel;
+		//窗口选中和鼠标悬停
 		bool m_ViewPortFocused;
 		bool m_ViewPortHovered;
+		//ImGui控件操作模式：平移、旋转、缩放
+		int m_GuizmoOperationType = -1;
 
 	public:
 		Editor_Layer();
@@ -56,5 +61,11 @@ namespace TribleZ
 		virtual void OnUpdata(TimeStep time_step) override;
 		virtual void OnImGuiRender() override;
 		virtual void OnEvent(Event& event) override;
+	private:
+		bool OnEventKeyPressed(EventKeyPress& event);
+
+		void SaveSceneAs();
+		void OpenScene();
+		void NewScene();
 	};
 }

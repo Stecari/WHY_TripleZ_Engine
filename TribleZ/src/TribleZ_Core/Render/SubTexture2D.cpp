@@ -7,7 +7,6 @@ namespace TribleZ
 	SubTexture2D::SubTexture2D(const Ref<Texture2D>& texture, const glm::vec2& bottom_left, const glm::vec2& upper_right)
 		:m_Texture2D(texture)
 	{
-		//这里还是有问题，子模块的坐标绑定上去上下是反过来的
 		m_TextureCoords[0] = { bottom_left.x, bottom_left.y };
 		m_TextureCoords[1] = { upper_right.x, bottom_left.y };
 		m_TextureCoords[2] = { upper_right.x, upper_right.y };

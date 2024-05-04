@@ -230,7 +230,7 @@ public:
 	virtual void OnEvent(TribleZ::Event& event) override		//处理事件
 	{
 		TribleZ::EventDispatcher Dispatcher(event);
-		Dispatcher.DisPatcher<TribleZ::EventMouseScrolled>(TZ_CORE_BIND_EVENT_Fn(&ExampleLayer::EventOnMouseScrolled));
+		Dispatcher.DisPatcher<TribleZ::EventMouseScrolled>(TZ_CORE_BIND_EVENT_Fn(ExampleLayer::EventOnMouseScrolled));
 
 		CameraController.OnEvent(event);
 		//if (event.GetEventType() == TribleZ::EventType::KeyPressed)

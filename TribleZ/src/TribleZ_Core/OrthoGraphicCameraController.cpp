@@ -77,8 +77,8 @@ namespace TribleZ
 		TZ_PROFILE_FUNCTION_SIG();
 
 		EventDispatcher event_dispatcher(event);
-		event_dispatcher.DisPatcher<EventMouseScrolled>(TZ_CORE_BIND_EVENT_Fn(&OrthoGraphicCameraContraller::OnEventMouseScrolled));
-		event_dispatcher.DisPatcher<EventWindowResize>(TZ_CORE_BIND_EVENT_Fn(&OrthoGraphicCameraContraller::OnEventWindowResize));
+		event_dispatcher.DisPatcher<EventMouseScrolled>(TZ_CORE_BIND_EVENT_Fn(OrthoGraphicCameraContraller::OnEventMouseScrolled));
+		event_dispatcher.DisPatcher<EventWindowResize>(TZ_CORE_BIND_EVENT_Fn(OrthoGraphicCameraContraller::OnEventWindowResize));
 	}
 
 	void OrthoGraphicCameraContraller::CalculateView()

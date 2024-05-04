@@ -185,4 +185,18 @@ namespace TribleZ
 	{
 	}
 	/*----------------------------------------------------------------------------------------------------*/
+
+	//¸¨Öú¹¦ÄÜ
+	Entity Scene::GetPrimaryCameraEntity()
+	{
+		auto View = m_Registry.view<CameraComponent>();
+		for (auto entity : View)
+		{
+			const auto& camera = View.get<CameraComponent>(entity);
+			if (camera.Primary){
+				return Entity{ entity, this };
+			}
+		}
+		return {};
+	}
 }

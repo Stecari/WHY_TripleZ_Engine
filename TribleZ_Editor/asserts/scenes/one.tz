@@ -1,0 +1,29 @@
+Scene: Scene's name
+Entities:
+  - Entity: 15151515151
+    TagComponent:
+      Tag: Camera
+    CameraComponent:
+      CameraProps:
+        ProjectionType: 0
+        OrthoGraphicSize: 720
+        OrthoGraphicNearClip: -1
+        OrthoGraphicFarClip: 1
+        PerspectiveFOV: 0.785398185
+        PerspectiveNearClip: 0.00999999978
+        PerspectiveFarClip: 10000
+      Primary_flag: true
+      FixedAspectRatio_flag: false
+    TransformComponent:
+      Translation: [0, 0, 955]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+  - Entity: 15151515151
+    TagComponent:
+      Tag: queb
+    TransformComponent:
+      Translation: [137.980896, -31.0526943, 212.124969]
+      Rotation: [2.67945862, -0.157946751, 0.345209152]
+      Scale: [199.999832, 298.000488, 244.999954]
+    SpriteRendererComponent:
+      Color: [0.284427911, 0.672597885, 0.169944659, 1]

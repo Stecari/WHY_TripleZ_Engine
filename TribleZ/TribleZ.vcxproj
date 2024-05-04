@@ -77,7 +77,7 @@
       <PrecompiledHeaderFile>tzpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;_CRT_SECURE_NO_WARNINGS;TZ_PLATFORM_WINDOWS;TZ_BUILD_DLL;_WINDLL;_UNICODE;UNICODE;TZ_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -100,7 +100,7 @@
       <PrecompiledHeaderFile>tzpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;_CRT_SECURE_NO_WARNINGS;TZ_PLATFORM_WINDOWS;TZ_BUILD_DLL;_WINDLL;_UNICODE;UNICODE;TZ_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -126,7 +126,7 @@
       <PrecompiledHeaderFile>tzpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;_CRT_SECURE_NO_WARNINGS;TZ_PLATFORM_WINDOWS;TZ_BUILD_DLL;_WINDLL;_UNICODE;UNICODE;TZ_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -147,6 +147,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Gitvender\ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="Gitvender\glm\glm\common.hpp" />
     <ClInclude Include="Gitvender\glm\glm\detail\_features.hpp" />
     <ClInclude Include="Gitvender\glm\glm\detail\_fixes.hpp" />
@@ -582,6 +583,7 @@
     <ClInclude Include="src\Tool\BenchMarking.h" />
     <ClInclude Include="src\Tool\Time.h" />
     <ClInclude Include="src\TribleZ.h" />
+    <ClInclude Include="src\TribleZMath\TribleZMath.h" />
     <ClInclude Include="src\TribleZ_Core\Application.h" />
     <ClInclude Include="src\TribleZ_Core\Core.h" />
     <ClInclude Include="src\TribleZ_Core\EntryPoint.h" />
@@ -612,9 +614,13 @@
     <ClInclude Include="src\TribleZ_Core\Render\VertexArray.h" />
     <ClInclude Include="src\TribleZ_Core\TimeStep.h" />
     <ClInclude Include="src\TribleZ_Core\Window.h" />
+    <ClInclude Include="src\Utils\PlatformUtils.h" />
     <ClInclude Include="src\tzpch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Gitvender\ImGuizmo\ImGuizmo.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Gitvender\stb_image\stb_image.cpp" />
     <ClCompile Include="src\ImGui\ImGUIBuild.cpp" />
     <ClCompile Include="src\ImGui\ImGuiLayer.cpp" />
@@ -627,9 +633,11 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
+    <ClCompile Include="src\Platform\Windows\WinodwsPlatformUtils.cpp" />
     <ClCompile Include="src\Scene\Entity.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\TribleZMath\TribleZMath.cpp" />
     <ClCompile Include="src\TribleZ_Core\Application.cpp" />
     <ClCompile Include="src\TribleZ_Core\Layer.cpp" />
     <ClCompile Include="src\TribleZ_Core\LayerStack.cpp" />

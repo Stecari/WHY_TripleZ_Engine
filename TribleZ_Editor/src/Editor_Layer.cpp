@@ -11,6 +11,10 @@
 #include "Tool/BenchMarking.h"
 
 #include "Scene/SceneSerializer.h"
+#include "Utils/PlatformUtils.h"
+
+#include "ImGuizmo/ImGuizmo.h"
+#include "TribleZMath/TribleZMath.h"
 
 #define PARTICLE_SYSTEM_ON 0
 
@@ -140,7 +144,7 @@ namespace TribleZ
 #endif
 
 		//画面分层面板初始化
-		m_ScenePanel.SetContext(ActiveScene);
+		m_SceneHierarchyPanel.SetContext(ActiveScene);
 	}
 
 	void Editor_Layer::OnDetach()
@@ -179,19 +183,17 @@ namespace TribleZ
 		rotation += 20.0f * time_step;
 
 		FrameBuffer_2D->Bind();
-		{
-			TZ_PROFILE_SCOPE("RENDERER");
-			RendererCommand::SetClearColor({ 0.3f, 0.3f, 0.3f, 1.0f });
-			RendererCommand::Clear();
+		RendererCommand::SetClearColor({ 0.3f, 0.3f, 0.3f, 1.0f });
+		RendererCommand::Clear();
 
-			//Renderer2D::SceneBegin(CameraController.GetCamera());
-			//更新场景
-			ActiveScene->OnUpdata(time_step);
+		//Renderer2D::SceneBegin(CameraController.GetCamera());
+		//更新场景
+		ActiveScene->OnUpdata(time_step);
 
-			//Renderer2D::SceneEnd();
+		//Renderer2D::SceneEnd();
 
-			/*这里有一个很莫名其妙的bug，假如后渲染图形是放在下层的，在它上面的图形的透明度会失效*/
-			//Renderer2D::SceneBegin(CameraController.GetCamera());
+		/*这里有一个很莫名其妙的bug，假如后渲染图形是放在下层的，在它上面的图形的透明度会失效*/
+		//Renderer2D::SceneBegin(CameraController.GetCamera());
 			//for (int y = 0; y < Map_Height; y++)
 			//{
 			//	for (int x = 0; x < Map_Width; x++)
@@ -209,7 +211,7 @@ namespace TribleZ
 			//}
 			//Renderer2D::SceneEnd();
 
-			FrameBuffer_2D->UnBind();
+		FrameBuffer_2D->UnBind();
 
 #if PARTICLE_SYSTEM_ON
 			//粒子系统：点击鼠标发射粒子
@@ -232,7 +234,6 @@ namespace TribleZ
 			m_ParticleSystem.OnUpdata(time_step);
 			m_ParticleSystem.OnRender(CameraController.GetCamera());
 #endif
-		}
 	}
 
 #define Docking_Excemple_Code 0
@@ -319,29 +320,14 @@ namespace TribleZ
 				// which we can't undo at the moment without finer window depth/z control.
 				ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen);
 				ImGui::Separator();
-#if Docking_Excemple_Code 
-				if (ImGui::MenuItem("Flag: NoDockingOverCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_NoDockingOverCentralNode) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_NoDockingOverCentralNode; }
-				if (ImGui::MenuItem("Flag: NoDockingSplit", "", (dockspace_flags & ImGuiDockNodeFlags_NoDockingSplit) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_NoDockingSplit; }
-				if (ImGui::MenuItem("Flag: NoUndocking", "", (dockspace_flags & ImGuiDockNodeFlags_NoUndocking) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_NoUndocking; }
-				if (ImGui::MenuItem("Flag: NoResize", "", (dockspace_flags & ImGuiDockNodeFlags_NoResize) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_NoResize; }
-				if (ImGui::MenuItem("Flag: AutoHideTabBar", "", (dockspace_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_AutoHideTabBar; }
-				if (ImGui::MenuItem("Flag: PassthruCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, opt_fullscreen)) { dockspace_flags ^= ImGuiDockNodeFlags_PassthruCentralNode; }
-#endif
-				if (ImGui::MenuItem("Serialize")) 
-				{
-					SceneSerializer TZ_Serializer(ActiveScene);
-					TZ_Serializer.Serializer("asserts/scenes/excmple.tz");
+				if (ImGui::MenuItem("New", "Ctrl+N"))	{
+					NewScene();
 				}
-
-				if (ImGui::MenuItem("Deserialize"))
-				{
-					/*
-					* 这里还是有问题Bug
-					* 我们每一次读出数据的时候，并没有创建一个删掉原来的Scene新的Scene
-					* 这就会导致每一次读入都导入一个重复的Scene在一个Scene上面叠加好几层
-					*/
-					SceneSerializer TZ_Serializer(ActiveScene);
-					TZ_Serializer.Deserializer("asserts/scenes/excmple.tz");
+				if (ImGui::MenuItem("Open...", "Ctrl+O")){																													/*  显示的提示信息   */
+					OpenScene();
+				}
+				if (ImGui::MenuItem("Save As ...", "Shift+Ctrl+S")){
+					SaveSceneAs();
 				}
 
 				if (ImGui::MenuItem("Exit")) { Application::GetInstence().Close(); }
@@ -356,7 +342,7 @@ namespace TribleZ
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));		//边框填充
 
 			//显示分层面板
-			m_ScenePanel.OnImGuiRender();
+			m_SceneHierarchyPanel.OnImGuiRender();
 
 			//数据和编辑
 			ImGui::Begin("Editor_Layer");
@@ -365,28 +351,6 @@ namespace TribleZ
 			ImGui::Text("QuadCount: %d", stats.QuadCount);
 			ImGui::Text("VertexCount: %d", stats.GetVertexCount());
 			ImGui::Text("Index: %d", stats.GetIndexCount());
-
-#ifdef OLD_CODE
-
-			ImGui::DragFloat3("main_camera", glm::value_ptr(Camera_Entity.GetComponent<TransformComponent>().Transform[3]));
-
-			if (ImGui::Checkbox("main_cam", &main_cam))
-			{
-				Camera_Entity.GetComponent<CameraComponent>().Primary = main_cam;
-				Obj_Camera.GetComponent<CameraComponent>().Primary = !main_cam;
-			}
-
-			{
-				auto& camera = Obj_Camera.GetComponent<CameraComponent>().Camera;
-				float size = camera.GetOrthoGraphicSize();
-				if (ImGui::DragFloat("Second cam size", &size))
-				{
-					camera.SetOrthoGraphicSize(size);
-				}	
-			}
-
-#endif // OLD_CODE
-
 
 			 
 			//把图像显示层放在这里一样能运行，ImGui的API做的真是人性化
@@ -409,10 +373,87 @@ namespace TribleZ
 			//窗口选中
 			m_ViewPortFocused = ImGui::IsWindowFocused();		//鼠标是否悬停在这个窗口上
 			m_ViewPortHovered = ImGui::IsWindowHovered();		//是否选中这个窗口
-			Application::GetInstence().GetImGuiLayer()->SetBlockEvent(!m_ViewPortFocused || !m_ViewPortHovered);
+			Application::GetInstence().GetImGuiLayer()->SetBlockEvent(!m_ViewPortFocused && !m_ViewPortHovered);
 
-			uint32_t textureID = FrameBuffer_2D->GetColorAttachment();
-			ImGui::Image((void*)textureID, ImVec2(m_ViewSize.x, m_ViewSize.y), ImVec2(0, 1), ImVec2(1, 0));
+			uint64_t textureID = FrameBuffer_2D->GetColorAttachment();
+			//ImGui::Image((void*)textureID, ImVec2(m_ViewSize.x, m_ViewSize.y), ImVec2(0, 1), ImVec2(1, 0));
+			//更安全的版本，他没讲，看的时候看到的
+			ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2(m_ViewSize.x, m_ViewSize.y), ImVec2(0, 1), ImVec2(1, 0));
+
+			//ImGuizmo	ImGui小组件
+			Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();	//这个功能有点不合理，因为理论上我们要的是根据鼠标点击的地方来将那个实体赋给这个，但暂时我们先这样
+			if (selectedEntity && m_GuizmoOperationType != -1)
+			{
+				ImGuizmo::SetOrthographic(false);		//暂时关闭正交模式
+				ImGuizmo::SetDrawlist();				//看描述这个就是一个格式化的东西？
+
+				float windowWidth = ImGui::GetWindowWidth();
+				float windowHeight = ImGui::GetWindowHeight();
+				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);		//SetRectangle Rectangle:矩形
+
+				//获取主相机参数
+				Entity cameraEntity = ActiveScene->GetPrimaryCameraEntity();
+				const auto& PrimaryCamera = cameraEntity.GetComponent<CameraComponent>().Camera;
+				const glm::mat4& CameraProjection = PrimaryCamera.GetProjection();
+				glm::mat4 CameraView = inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+				//获取实体信息
+				auto& SelectedEntity_TC = selectedEntity.GetComponent<TransformComponent>();
+				glm::mat4 SelectEntitytransform = SelectedEntity_TC.GetTransform();
+
+				//snap  这个好像是跳动式变化
+				bool snap = Input::IsKeyPressed(TZ_KEY_LEFT_CONTROL);
+				float snapValue = 50.0f;
+				if (m_GuizmoOperationType == ImGuizmo::OPERATION::ROTATE) {
+					snapValue = 15.0f;
+				}
+				if (m_GuizmoOperationType == ImGuizmo::OPERATION::SCALE) {
+					snapValue = 0.2f;
+				}
+				float SnapValues[3] = { snapValue , snapValue , snapValue };
+
+				/*
+				* 组件操作 函数，通过ImGuizmo::OPERATION::参数切换平移旋转缩放还有一种不知道的操作模式
+				* 不能在同一帧中以不同的 操作模式 多次调用这个函数
+				* 不然的话，比如先调用了平移和缩放
+				* 那么当你平移时，平移的操作函数读到正常的数据，但是缩放的函数拿到的是平移的数据
+				* 就会指针出错
+				* 所以只能在渲染过程中切换模式
+				*/
+				ImGuizmo::Manipulate(glm::value_ptr(CameraView), glm::value_ptr(CameraProjection), 
+					(ImGuizmo::OPERATION)m_GuizmoOperationType, ImGuizmo::LOCAL, glm::value_ptr(SelectEntitytransform), nullptr, snap? SnapValues : nullptr);
+
+				if (ImGuizmo::IsUsing())
+				{
+#ifdef STATIC_EULER_POINT
+					/*
+					* 假如直接使用也是可以的，但这个涉及到一个静态欧拉角还是动态欧拉角的问题
+					* 直接使用就是忽略gimbal lock的影响直接使用静态欧拉角
+					* 那么旋转的坐标轴就是固定的，值也将被限制在±180°内。	后面发现不是这个原因，非常好我现在也不知道是什么原因了
+					* 但实际上我们希望的是坐标轴随之转动的动态欧拉角，也就是理论上的转动在±无限上
+					* 所以这里cherno采用将rotation的绝对值改变改为delta值(变化值)
+					*/
+					glm::vec3 translation, rotation, scale;
+					Math::Decomposed(SelectEntitytransform, translation, rotation, scale);
+					SelectedEntity_TC.Translation = translation;
+					SelectedEntity_TC.Rotation = rotation;
+					SelectedEntity_TC.Scale = scale;
+#endif // STATIC_EULER_POINT
+					glm::vec3 translation, rotation, scale;
+					Math::Decomposed(SelectEntitytransform, translation, rotation, scale);
+
+					glm::vec3 delta_rotation = rotation - SelectedEntity_TC.Rotation;
+
+					SelectedEntity_TC.Translation = translation;
+					SelectedEntity_TC.Rotation += delta_rotation;
+					SelectedEntity_TC.Scale = scale;
+					
+				}
+			}
+			
+
+
+
 			ImGui::End();
 
 			ImGui::PopStyleVar();
@@ -424,6 +465,101 @@ namespace TribleZ
 	{
 		TZ_PROFILE_FUNCTION_SIG();
 		CameraController.OnEvent(event);
+
+		EventDispatcher dispatcher(event);
+		dispatcher.DisPatcher<EventKeyPress>(TZ_CORE_BIND_EVENT_Fn(Editor_Layer::OnEventKeyPressed));
+	}
+
+	bool Editor_Layer::OnEventKeyPressed(EventKeyPress& event)
+	{
+		if (event.GetRepeatCount() > 0) {
+			return false;
+		}
+
+		bool Ctrl = Input::IsKeyPressed(TZ_KEY_LEFT_CONTROL) || Input::IsKeyPressed(TZ_KEY_RIGHT_CONTROL);
+		bool Shift = Input::IsKeyPressed(TZ_KEY_LEFT_SHIFT) || Input::IsKeyPressed(TZ_KEY_RIGHT_SHIFT);
+
+		switch (event.GetKeyCode())
+		{
+			//file dialogs
+			case TZ_KEY_O:
+			{
+				if (Ctrl) { OpenScene(); }
+				break;
+			}
+			case TZ_KEY_N:
+			{
+				if (Ctrl) { NewScene(); }
+				break;
+			}
+			case TZ_KEY_S:
+			{
+				if (Shift && Ctrl) { SaveSceneAs(); }
+				break;
+			}
+			//Guizmo
+			case TZ_KEY_Q:
+			{
+				m_GuizmoOperationType = ImGuizmo::OPERATION::TRANSLATE;
+				break;
+			}
+			case TZ_KEY_W:
+			{
+				m_GuizmoOperationType = ImGuizmo::OPERATION::ROTATE;
+				break;
+			}
+			case TZ_KEY_E:
+			{
+				m_GuizmoOperationType = ImGuizmo::OPERATION::SCALE;
+				break;
+			}
+			case TZ_KEY_R:
+			{
+				m_GuizmoOperationType = -1;
+				break;
+			}
+		}
+	}
+
+	void Editor_Layer::SaveSceneAs()
+	{
+		std::string file_path = FileDialogs::SaveFile("TribleZ Scene (*.tz)\0*.tz\0");
+		if (!file_path.empty())
+		{
+			SceneSerializer TZ_Serializer(ActiveScene);
+			TZ_Serializer.Serializer(file_path);
+		}
+	}
+	void Editor_Layer::OpenScene()
+	{
+		std::string file_path = FileDialogs::OpenFile("TribleZ Scene (*.tz)\0*.tz\0");	//这个就是自定义文件过滤器的格式 TribleZ Scene (*.tz) \0*.tz\0		比如这里就会将所有(*)以.tz为后缀的文件显示出来
+		if (!file_path.empty())	//路径不为空，说明成功进行了															/*  被两个 \0 夹起来的部分就是真正的过滤器*/
+		{
+			ActiveScene = CreatRef<Scene>();	//创建一个新的场景
+			ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);	//初始化视口大小防止相机缩放比出问题
+			m_SceneHierarchyPanel.SetContext(ActiveScene);	//这里本来里面没有指针刷新，所以会出问题
+
+			SceneSerializer TZ_Serializer(ActiveScene);
+			TZ_Serializer.Deserializer(file_path);
+		}
+	}
+	void Editor_Layer::NewScene()
+	{
+#if 0
+		std::string file_path = FileDialogs::SaveFile("TribleZ Scene (*.tz)\0*.tz\0");
+		if (!file_path.empty())	//路径不为空，说明成功进行了															/*  被两个 \0 夹起来的部分就是真正的过滤器*/
+		{
+			ActiveScene = CreatRef<Scene>();	//创建一个新的场景
+			ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);	//初始化视口大小防止相机缩放比出问题
+			m_SceneHierarchyPanel.SetContext(ActiveScene);
+
+			SceneSerializer TZ_Serializer(ActiveScene);
+			TZ_Serializer.Serializer(file_path);
+		}
+#endif
+		ActiveScene = CreatRef<Scene>();
+		ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);
+		m_SceneHierarchyPanel.SetContext(ActiveScene);
 	}
 }
 

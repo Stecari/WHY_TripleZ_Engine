@@ -19,6 +19,8 @@ namespace TribleZ
 
 		void SetContext(const Ref<Scene>& context);
 
+		Entity GetSelectedEntity() const { return m_SelectionContext; }
+
 		void OnImGuiRender();
 
 	private:

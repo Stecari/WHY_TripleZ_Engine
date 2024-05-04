@@ -28,6 +28,9 @@ namespace TribleZ
 		//void DeleteEntity(const Entity& entity);		//我喜欢这样
 		void DeleteEntity(Entity entity);
 
+		//z这里我发现我一直有有些盲区，就是我特别喜欢加&，这个根本不用加&，而且加不了的啊
+		Entity GetPrimaryCameraEntity();
+
 	private:
 		/*用特殊手段将函数体放在cpp文件里，这个用法比较少，可以关注一下*/
 		template<typename T>

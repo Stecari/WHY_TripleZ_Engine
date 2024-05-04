@@ -83,13 +83,15 @@
 /*位移操作，右往左数第x位变成1，其他0*/
 #define BIT(x)	(1 << (x))
 
-#define TZ_CORE_BIND_EVENT_Fn(fn) std::bind(fn, this, std::placeholders::_1)
-//视频的接口是长这样的，所以下面那个因该和这个接口配对，所以直接用会有问题
+//#define TZ_CORE_BIND_EVENT_Fn(fn) std::bind(fn, this, std::placeholders::_1)
+//视频的接口是长下面这样的，所以下面那个因该和这个接口配对，所以直接用会有问题
 // 都是后要把所有代码里的BIND改一下，要么研究一下换下面那个接口
 //#define TZ_CORE_BIND_EVENT_Fn(fn) std::bind(&fn, this, std::placeholders::_1)
 
 //这个不知道是啥，视屏里写的，到时候再修吧		这个竟然是Lambda  之前再CSDN上又看到博主的cherno学习笔记里有写到时候取查一下
-//#define TZ_CORE_BIND_EVENT_Fn(fn) [this](auto&&... args) -> decltype(auto) {return this->fn(std::forward<decltype(args)>(args)...);}
+#define TZ_CORE_BIND_EVENT_Fn(fn) [this](auto&&... args) -> decltype(auto) {return this->fn(std::forward<decltype(args)>(args)...);}
+//这里是后面正在写文件对话窗快捷键Event的我，这个地方不把原来的Bind换成Lambda甚至会导致release出问题
+//总之就是这里不只是性能的问题，不换是会出bug的，具体原因到时候在查，现在我要去赶动车去安吉了
 
 
 namespace TribleZ

@@ -25,6 +25,7 @@ IncludeDir["glm"] = "TribleZ/Gitvender/glm"
 IncludeDir["entt"] = "TribleZ/Gitvender/entt"
 IncludeDir["stb_image"] = "TribleZ/Gitvender/stb_image"
 IncludeDir["yaml_cpp"] = "TribleZ/Gitvender/yaml_cpp/include"
+IncludeDir["ImGuizmo"] = "TribleZ/Gitvender/ImGuizmo"
 
 group "Dependencies"
 	--include "vender/premake"
@@ -56,6 +57,9 @@ project "TribleZ"
 		--"%{prj.name}/Gitvender/glm/glm/**.cppm"
 		"%{prj.name}/Gitvender/stb_image/stb_image.cpp",
 		"%{prj.name}/Gitvender/stb_image/stb_image.h",
+		
+		"%{prj.name}/Gitvender/ImGuizmo/ImGuizmo.h",
+		"%{prj.name}/Gitvender/ImGuizmo/ImGuizmo.cpp",
 	}
 
 	defines
@@ -76,7 +80,8 @@ project "TribleZ"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml_cpp}"
+		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links
@@ -87,6 +92,11 @@ project "TribleZ"
 		"yaml-cpp",
 		"opengl32.lib"
 	}
+
+	--我们不希望我们导入的子模块和我们自己写的代码一样全都需要包括我们的预编译头文件
+	--于是用文件过滤器找出这些文件然后将其加上“NoPCH”的标志来表示不要预编译头文件
+	filter "files:TribleZ/Gitvender/ImGuizmo/**.cpp"
+	flags { "NoPCH" }
 
 	filter "system:windows"
 		--staticruntime "On"  --?????????????
@@ -216,7 +226,8 @@ project "TribleZ_Editor"
 		"TribleZ/src",
 		"%{IncludeDir.glm}",
 		"TribleZ/Gitvender",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		--"%{IncludeDir.ImGuizmo}"
 	}
 
 	links

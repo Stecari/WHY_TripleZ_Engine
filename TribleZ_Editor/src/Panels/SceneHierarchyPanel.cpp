@@ -13,6 +13,7 @@ namespace TribleZ
 
 	void SceneHierarchyPanel::SetContext(const Ref<Scene>& context)
 	{
+		m_SelectionContext = {};	//为了防止创建一个新的Scene的时候老的Scene的指针违法，所以要置空
 		m_Context = context;
 	}
 

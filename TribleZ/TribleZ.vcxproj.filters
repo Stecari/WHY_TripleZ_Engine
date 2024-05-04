@@ -4,6 +4,9 @@
     <Filter Include="Gitvender">
       <UniqueIdentifier>{4D27A623-B991-5A9A-02D0-0B406E7938EF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gitvender\ImGuizmo">
+      <UniqueIdentifier>{4D20F9A7-3904-BAFD-A264-B4508E67A47F}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Gitvender\glm">
       <UniqueIdentifier>{1C90EE4D-8850-6A84-518B-B301BD0AAF60}</UniqueIdentifier>
     </Filter>
@@ -58,8 +61,14 @@
     <Filter Include="src\TribleZ_Core\Render">
       <UniqueIdentifier>{4F3D98F4-BB74-E08B-C47E-44AF30350785}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Utils">
+      <UniqueIdentifier>{4D9AFFB3-B904-B42A-0243-65D06EEC917F}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Gitvender\ImGuizmo\ImGuizmo.h">
+      <Filter>Gitvender\ImGuizmo</Filter>
+    </ClInclude>
     <ClInclude Include="Gitvender\glm\glm\common.hpp">
       <Filter>Gitvender\glm\glm</Filter>
     </ClInclude>
@@ -1353,6 +1362,9 @@
     <ClInclude Include="src\Scene\ScriptableEntity.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\Scene\YAMLBatchForGLM.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="src\Tool\BenchMarking.h">
       <Filter>src\Tool</Filter>
     </ClInclude>
@@ -1452,12 +1464,18 @@
     <ClInclude Include="src\TribleZ_Core\Window.h">
       <Filter>src\TribleZ_Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Utils\PlatformUtils.h">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\tzpch.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\YAMLBatchForGLM.h" />
+    <ClInclude Include="src\TribleZMath\TribleZMath.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Gitvender\ImGuizmo\ImGuizmo.cpp">
+      <Filter>Gitvender\ImGuizmo</Filter>
+    </ClCompile>
     <ClCompile Include="Gitvender\stb_image\stb_image.cpp">
       <Filter>Gitvender\stb_image</Filter>
     </ClCompile>
@@ -1492,6 +1510,9 @@
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
+      <Filter>src\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WinodwsPlatformUtils.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\Entity.cpp">
@@ -1560,5 +1581,6 @@
     <ClCompile Include="src\tzpch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\TribleZMath\TribleZMath.cpp" />
   </ItemGroup>
 </Project>

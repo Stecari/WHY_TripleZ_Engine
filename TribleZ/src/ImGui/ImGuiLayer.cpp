@@ -12,6 +12,7 @@
 #include "glad/glad.h"
 
 #include "TribleZ_Core/Application.h"
+#include "ImGuizmo.h"
 
 
 namespace TribleZ
@@ -95,6 +96,8 @@ namespace TribleZ
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        //开始记录ImGuizmo的Frame
+        ImGuizmo::BeginFrame();
     }
 
     /*
@@ -165,6 +168,7 @@ namespace TribleZ
         if (m_BlockEvent)
         {
             ImGuiIO& imgui_io = ImGui::GetIO();
+            //假如存在阻塞事件，将会手动使现在接受的事件的句柄全部变成已处理？
             event.m_Handle |= event.Filter_IsInCategory(EventCategoryMouse) & imgui_io.WantCaptureMouse;
             event.m_Handle |= event.Filter_IsInCategory(EventCategoryKeyboard) & imgui_io.WantCaptureKeyboard;
         }

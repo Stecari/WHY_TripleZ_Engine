@@ -13,3 +13,6 @@
 [submodule "TribleZ/Gitvender/yaml_cpp"]
 	path = TribleZ/Gitvender/yaml_cpp
 	url = https://github.com/TheCherno/yaml-cpp
+[submodule "TribleZ/Gitvender/ImGuizmo"]
+	path = TribleZ/Gitvender/ImGuizmo
+	url = https://github.com/TheCherno/ImGuizmo

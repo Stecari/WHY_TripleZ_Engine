@@ -1,6 +1,10 @@
 #pragma once
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
 #include "TribleZ_Core/Render/SceneCamera.h"
 #include "Scene/ScriptableEntity.h"
 
@@ -30,9 +34,13 @@ namespace TribleZ
 
 		glm::mat4 GetTransform() const
 		{
+#ifdef OLD_CODE_MAKE_ROTATION
 			glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), Rotation.x, { 1.0f, 0.0f, 0.0 })
 							   * glm::rotate(glm::mat4(1.0f), Rotation.y, { 0.0f, 1.0f, 0.0 }) 
 							   * glm::rotate(glm::mat4(1.0f), Rotation.z, { 0.0f, 0.0f, 1.0 });
+#endif
+			//实验性代码，利用欧拉角和四元数转换，不一定会快，可能只是看上去会干净一点
+			glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
 
 			glm::mat4 transform = glm::translate(glm::mat4(1.0), Translation)
 								* rotation

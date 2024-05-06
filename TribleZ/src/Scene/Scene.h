@@ -3,6 +3,7 @@
 #include "entt.hpp"
 
 #include "TribleZ_Core/TimeStep.h"
+#include "TribleZ_Core/Render/Editor_Camera.h"
 
 namespace TribleZ
 {
@@ -21,7 +22,11 @@ namespace TribleZ
 		Scene();
 		~Scene();
 
-		void OnUpdata(TimeStep tiemstep);
+		/*OnUpdata更新函数分为编辑时和运行时，运行时就是相当于按下了编辑器上的“游玩”或者“运行”按钮后
+		* 差别就是编辑时需要将相机作为一个可以被渲染实体，这样子就可以在编辑器中拖动相机，让他处于我们想要的位置，
+		* 然后再点击"游玩"或者"试玩"进入运行时，视角进入指定相机，不再渲染所有相机的虚拟实体*/
+		void OnUpdataEditor(TimeStep tiemstep, Editor_Camera Edi_Camera);
+		void OnUpdataRuntime(TimeStep tiemstep);	//OnUpdataRuntime
 		void ResizeView(uint32_t width, uint32_t height);
 
 		Entity CreateEntity(const std::string& name = std::string());	//每个实体包含一个entt::entity,和Scene*

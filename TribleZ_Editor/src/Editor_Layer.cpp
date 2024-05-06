@@ -82,6 +82,8 @@ namespace TribleZ
 
 		//场景初始化
 		ActiveScene = CreatRef<Scene>();
+
+		m_EditorCamera = Editor_Camera(60.0f, 1.788f, 0.01f, 10000.0f);
 		
 #if 0
 		//初始化实体
@@ -157,20 +159,21 @@ namespace TribleZ
 		TZ_PROFILE_FUNCTION();	//计时器，基准测试
 
 
-		//不知道什么时候加的resizing
+		//设置窗口尺寸—视口尺寸
 		if (TribleZ::FrameBufferSpecification t_spec = FrameBuffer_2D->GetSpecification();	//if语句判断中可以采用一个分号，分号前是我判断前要进行地操作语句
 			m_ViewSize.x > 0.0f && m_ViewSize.y > 0.0f &&	//我Gui视口(窗口)的大小要大于0
 			t_spec.Width != m_ViewSize.x || t_spec.Height != m_ViewSize.y)		//视口大小不等于帧缓冲区大小
 		{
 			FrameBuffer_2D->Resize((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);
 			CameraController.ResizeView(m_ViewSize.x, m_ViewSize.y);
-
+			m_EditorCamera.SetViewportSize(m_ViewSize.x, m_ViewSize.y);
 			ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);
 		}
 
 		//更新相机
 		if (m_ViewPortFocused){		//只有选中该窗口时才能启用相机更新
 			CameraController.OnUpdata(time_step);
+			m_EditorCamera.OnUpdata(time_step);
 		}
 
 		//更行统计数据
@@ -185,31 +188,9 @@ namespace TribleZ
 		FrameBuffer_2D->Bind();
 		RendererCommand::SetClearColor({ 0.3f, 0.3f, 0.3f, 1.0f });
 		RendererCommand::Clear();
-
-		//Renderer2D::SceneBegin(CameraController.GetCamera());
 		//更新场景
-		ActiveScene->OnUpdata(time_step);
-
-		//Renderer2D::SceneEnd();
-
-		/*这里有一个很莫名其妙的bug，假如后渲染图形是放在下层的，在它上面的图形的透明度会失效*/
-		//Renderer2D::SceneBegin(CameraController.GetCamera());
-			//for (int y = 0; y < Map_Height; y++)
-			//{
-			//	for (int x = 0; x < Map_Width; x++)
-			//	{
-			//		char block = TileMap[x + y * Map_Width];
-			//		Ref<SubTexture2D> tex;
-			//		if (m_SubTexMap.find(block) != m_SubTexMap.end()) {
-			//			tex = m_SubTexMap[block];
-			//		}
-			//		else {
-			//			tex = m_SubTexMap['R'];
-			//		}
-			//		Renderer2D::DrawQuad({ 160.0f * x - Map_Width * 160.0f / 2 , 160.0f * y - Map_Height * 160.0f / 2, -0.2f }, { 160.0f, 160.0f }, tex);
-			//	}
-			//}
-			//Renderer2D::SceneEnd();
+		//ActiveScene->OnUpdataRuntime(time_step);
+		ActiveScene->OnUpdataEditor(time_step, m_EditorCamera);
 
 		FrameBuffer_2D->UnBind();
 
@@ -392,10 +373,17 @@ namespace TribleZ
 				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);		//SetRectangle Rectangle:矩形
 
 				//获取主相机参数
+#ifdef RUNTIME
 				Entity cameraEntity = ActiveScene->GetPrimaryCameraEntity();
 				const auto& PrimaryCamera = cameraEntity.GetComponent<CameraComponent>().Camera;
 				const glm::mat4& CameraProjection = PrimaryCamera.GetProjection();
 				glm::mat4 CameraView = inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+#else
+				const glm::mat4& CameraProjection = m_EditorCamera.GetProjection();
+				glm::mat4 CameraView = m_EditorCamera.GetViewMatrix();
+
+#endif
+
 
 				//获取实体信息
 				auto& SelectedEntity_TC = selectedEntity.GetComponent<TransformComponent>();
@@ -465,6 +453,7 @@ namespace TribleZ
 	{
 		TZ_PROFILE_FUNCTION_SIG();
 		CameraController.OnEvent(event);
+		m_EditorCamera.OnEvent(event);
 
 		EventDispatcher dispatcher(event);
 		dispatcher.DisPatcher<EventKeyPress>(TZ_CORE_BIND_EVENT_Fn(Editor_Layer::OnEventKeyPressed));

@@ -1471,6 +1471,7 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\TribleZMath\TribleZMath.h" />
+    <ClInclude Include="src\TribleZ_Core\Render\Editor_Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Gitvender\ImGuizmo\ImGuizmo.cpp">
@@ -1582,5 +1583,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\TribleZMath\TribleZMath.cpp" />
+    <ClCompile Include="src\TribleZ_Core\Render\Editor_Camera.cpp" />
   </ItemGroup>
 </Project>

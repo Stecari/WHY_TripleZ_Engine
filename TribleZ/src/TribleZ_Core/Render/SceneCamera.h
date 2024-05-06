@@ -12,7 +12,7 @@ namespace TribleZ
 		CameraProjectionType m_ProjectionType = CameraProjectionType::OrthoGraphic;
 
 		float m_OrthoGraphicSize = 720.0f;
-		float m_OrthoGraphicNear = -1.0f, m_OrthoGraphicFar = 1.0f;
+		float m_OrthoGraphicNear = -1.0f, m_OrthoGraphicFar = 1.0f;		//这个到时候都要改，改成10，或者100
 
 		float m_PerspectiveFOV = glm::radians(45.0f);	//视野角度
 		float m_PerspectiveNear = 0.01f, m_PerspectiveFar = 10000.0f;

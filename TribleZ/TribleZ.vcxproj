@@ -601,6 +601,7 @@
     <ClInclude Include="src\TribleZ_Core\Render\BaseCamera.h" />
     <ClInclude Include="src\TribleZ_Core\Render\Buffer.h" />
     <ClInclude Include="src\TribleZ_Core\Render\Camera.h" />
+    <ClInclude Include="src\TribleZ_Core\Render\Editor_Camera.h" />
     <ClInclude Include="src\TribleZ_Core\Render\FrameBuffer.h" />
     <ClInclude Include="src\TribleZ_Core\Render\GraphicRenderContext.h" />
     <ClInclude Include="src\TribleZ_Core\Render\Renderer.h" />
@@ -645,6 +646,7 @@
     <ClCompile Include="src\TribleZ_Core\OrthoGraphicCameraController.cpp" />
     <ClCompile Include="src\TribleZ_Core\Render\Buffer.cpp" />
     <ClCompile Include="src\TribleZ_Core\Render\Camera.cpp" />
+    <ClCompile Include="src\TribleZ_Core\Render\Editor_Camera.cpp" />
     <ClCompile Include="src\TribleZ_Core\Render\FrameBuffer.cpp" />
     <ClCompile Include="src\TribleZ_Core\Render\Renderer.cpp" />
     <ClCompile Include="src\TribleZ_Core\Render\Renderer2D.cpp" />

@@ -130,17 +130,14 @@ namespace TribleZ
 
 	void Renderer2D::ShutDown()
 	{
-		TZ_PROFILE_FUNCTION_SIG();
-
+		TZ_PROFILE_FUNCTION_SIG()
 	}
 
 
 	void Renderer2D::SceneBegin(const BaseCamera& camera, const glm::mat4& transform)	//初始化渲染器的数据库m_DataBase
 	{
 		TZ_PROFILE_FUNCTION_SIG();
-		m_DataBase.Quad_IndexCount = 0;	//索引重新开始计数
-		m_DataBase.TextureSlotIndex = 1;//纹理插槽重新开始计数(0号是白纹理)
-		m_DataBase.VertexBufferDataPtr = m_DataBase.VertexBufferDataBase;				//运行指针赋值
+		StartBatch();
 
 		glm::mat4 ViewProjection = camera.GetProjection() * glm::inverse(transform);	//由于是相机的变换所以要取反
 
@@ -150,14 +147,28 @@ namespace TribleZ
 	void Renderer2D::SceneBegin(const OrthoGraphicCamera& camera)	
 	{
 		TZ_PROFILE_FUNCTION_SIG();
-		m_DataBase.Quad_IndexCount = 0;	//索引重新开始计数
-		m_DataBase.TextureSlotIndex = 1;//纹理插槽重新开始计数(0号是白纹理)
-		m_DataBase.VertexBufferDataPtr = m_DataBase.VertexBufferDataBase;				//运行指针赋值
+		StartBatch();
 
 		m_DataBase.Texture_Shader->Bind();
 		m_DataBase.Texture_Shader->SetMat4("u_ViewProjection", camera.GetViewProjectMat());
 	}
+	void Renderer2D::SceneBegin(const Editor_Camera& camera)
+	{
+		TZ_PROFILE_FUNCTION_SIG();
+		StartBatch();
 
+		glm::mat4 ViewProjection = camera.GetViewProjection();	//由于是相机的变换所以要取反
+
+		m_DataBase.Texture_Shader->Bind();
+		m_DataBase.Texture_Shader->SetMat4("u_ViewProjection", ViewProjection);
+	}
+
+	void Renderer2D::StartBatch()
+	{
+		m_DataBase.Quad_IndexCount = 0;	//索引重新开始计数
+		m_DataBase.TextureSlotIndex = 1;//纹理插槽重新开始计数(0号是白纹理)
+		m_DataBase.VertexBufferDataPtr = m_DataBase.VertexBufferDataBase;				//运行指针赋值
+	}
 
 	void Renderer2D::SceneEnd()
 	{

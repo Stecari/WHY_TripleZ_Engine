@@ -52,10 +52,25 @@ namespace TribleZ
 
 	}
 
-	void Scene::OnUpdata(TimeStep timestep)
+	void Scene::OnUpdataEditor(TimeStep timestep, Editor_Camera Edi_Camera)
+	{
+		Renderer2D::SceneBegin(Edi_Camera);
+		/*这参数表什么鬼，到时候查一下*/
+		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);//获取一个内部 组,同时满足拥有这两个组件的数组
+		for (auto entity : group)		//根据 组 遍历实体
+		{
+			auto&& [trans, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);	//C++17 新特性，因该是tuple
+			Renderer2D::DrawQuad(trans.GetTransform(), sprite);
+		}
+
+		Renderer2D::SceneEnd();
+	}
+
+	void Scene::OnUpdataRuntime(TimeStep timestep)
 	{
 		//更新 脚本程序
 		{
+			//这个到时候还是要移动到OnScenePlay
 			m_Registry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& NativeScriptCom)
 			{
 				if (!NativeScriptCom.Entity_Instence)
@@ -72,7 +87,6 @@ namespace TribleZ
 
 
 		BaseCamera* main_camera = nullptr;
-		//glm::mat4* camera_trans = nullptr;
 		TransformComponent* camera_trans = nullptr;
 		{
 			/*
@@ -161,13 +175,11 @@ namespace TribleZ
 	/*------相当于是上面那个模板函数的扩展形式-----------------------------------------------------------*/
 	template<>
 	void Scene::OnComponentAdding<TagComponent>(Entity entity, TagComponent& component)
-	{
-	}
+	{}
 
 	template<>
 	void Scene::OnComponentAdding<TransformComponent>(Entity entity, TransformComponent& component)
-	{
-	}
+	{}
 
 	template<>
 	void Scene::OnComponentAdding<CameraComponent>(Entity entity, CameraComponent& component)
@@ -177,13 +189,11 @@ namespace TribleZ
 
 	template<>
 	void Scene::OnComponentAdding<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
-	{
-	}
+	{}
 
 	template<>
 	void Scene::OnComponentAdding<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
-	{
-	}
+	{}
 	/*----------------------------------------------------------------------------------------------------*/
 
 	//辅助功能

@@ -27,6 +27,7 @@ namespace TribleZ
 		Ref<FrameBuffer>	FrameBuffer_2D;
 
 		OrthoGraphicCameraContraller CameraController;
+		Editor_Camera m_EditorCamera;
 
 #ifdef DELETE_CODE
 		//ΚµΜε

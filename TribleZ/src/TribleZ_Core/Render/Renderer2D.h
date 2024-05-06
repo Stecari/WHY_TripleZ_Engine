@@ -4,6 +4,7 @@
 
 //#include "TribleZ_core/Render/Camera.h"
 #include "TribleZ_Core/OrthoGraphicCameraContraller.h"
+#include "TribleZ_Core/Render/Editor_Camera.h"
 #include "TribleZ_Core/Render/BaseCamera.h"
 #include "TribleZ_Core/Render/Texture.h"
 #include "TribleZ_Core/Render/SubTexture2D.h"
@@ -26,9 +27,12 @@ namespace TribleZ
 		static void Init();
 		static void ShutDown();
 
+		static void SceneBegin(const Editor_Camera& camera);
 		static void SceneBegin(const OrthoGraphicCamera& camera);
 		static void SceneBegin(const BaseCamera& camera, const glm::mat4& transform);	//用相机和相机的变换来创建场景
 		static void SceneEnd();
+
+		static void StartBatch();
 		static void Flush();
 
 		/*----------------------------渲染图元---------------------------------------------------------------------------------------------------------------------*/

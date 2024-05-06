@@ -1,6 +1,10 @@
 #pragma once
 #include "glm/glm.hpp"
 
+/*
+* 有问题
+* 等Camera行为类被删掉以后把这个改成Camera
+*/
 namespace TribleZ
 {
 	class BaseCamera

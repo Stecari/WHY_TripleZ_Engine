@@ -1,0 +1,11 @@
+Scene: Scene's name
+Entities:
+  - Entity: 15151515151
+    TagComponent:
+      Tag: tiny queb
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [-0.142822087, -0.435106903, -0.849158764]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.231759995, 0.317843944, 0.868327379, 1]

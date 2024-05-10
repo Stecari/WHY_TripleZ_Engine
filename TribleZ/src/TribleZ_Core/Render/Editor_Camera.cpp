@@ -134,8 +134,8 @@ namespace TribleZ
 		return glm::rotate(GetOrientation(), glm::vec3{ 1.0f, 0.0f, 0.0f });
 	}
 	glm::vec3 Editor_Camera::GetForwordDirection() const
-	{
-		return glm::rotate(GetOrientation(), glm::vec3{ 0.0f, 0.0f, 1.0f });
+	{																/*这里是-1，之前是1*/
+		return glm::rotate(GetOrientation(), glm::vec3{ 0.0f, 0.0f, -1.0f });
 	}
 	glm::quat Editor_Camera::GetOrientation() const	//获取方向
 	{

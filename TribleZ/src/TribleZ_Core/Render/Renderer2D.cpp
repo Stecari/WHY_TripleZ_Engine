@@ -117,7 +117,8 @@ namespace TribleZ
 		/*-----------------------设置参考-------------------------------------------------------------*/
 
 		/*-------------------读取着色器源码-----------------------------------------------------------*/
-		m_DataBase.Texture_Shader = Shader::Create("asserts/shader/Texture_Shader_d.glsl");
+		m_DataBase.Texture_Shader = Shader::Create("asserts/shader/Editor_TextureShader.glsl");
+		//m_DataBase.Texture_Shader = Shader::Create("asserts/shader/Editor_TextureShader_official.glsl");
 		/*-------------------读取着色器源码-----------------------------------------------------------*/
 		m_DataBase.Texture_Shader->Bind();
 		int texture[32];

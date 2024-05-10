@@ -51,6 +51,7 @@ namespace TribleZ
 		SpriteSheet_tex = Texture2D::Create("asserts/img/game/texture/tilemap_sheet.png");
 
 		FrameBufferSpecification FrameBuffer_Spec;
+		FrameBuffer_Spec.Attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER ,FramebufferTextureFormat::Depth };
 		FrameBuffer_Spec.Width = 1280;
 		FrameBuffer_Spec.Height = 720;
 		FrameBuffer_2D = FrameBuffer::Create(FrameBuffer_Spec);
@@ -191,6 +192,23 @@ namespace TribleZ
 		//更新场景
 		//ActiveScene->OnUpdataRuntime(time_step);
 		ActiveScene->OnUpdataEditor(time_step, m_EditorCamera);
+
+		//					/*全局坐标，左上角是0，0，一整块电脑屏幕作为载体*/
+		auto [mx, my] = ImGui::GetMousePos();
+		mx -= m_ViewportBound[0].x;
+		my -= m_ViewportBound[0].y;
+		/*换算成局部坐标，左下角是0，0，视口作为载体*/
+		//glm::vec2 viewportSize = m_ViewportBound[1] - m_ViewportBound[0];		//感觉没必要，就当是展示一下好了
+		int MouseX = (int)mx;
+		int MouseY = (int)(m_ViewSize.y - my);
+		//TZ_CORE_INFO("Pixcel: {0} , {1}", MouseX, MouseY);
+
+		if (MouseX > 0 && MouseX < m_ViewSize.x && MouseY > 0 && MouseY < m_ViewSize.y)
+		{
+			int Pixcel = FrameBuffer_2D->ReadPixel(1, MouseX, MouseY);
+			TZ_CORE_INFO("Pixcel: {0}", Pixcel);
+		}
+
 
 		FrameBuffer_2D->UnBind();
 
@@ -351,15 +369,32 @@ namespace TribleZ
 				m_ViewSize = { ViewPortPanesize.x, ViewPortPanesize.y };
 			}
 
+			//获取光标在全局中的位置，全局就是对于整块显示器，考虑标题栏下拉式光标下移，右上角为0，0
+			ImVec2 viewportOffset = ImGui::GetCursorPos();
+
+
 			//窗口选中
 			m_ViewPortFocused = ImGui::IsWindowFocused();		//鼠标是否悬停在这个窗口上
 			m_ViewPortHovered = ImGui::IsWindowHovered();		//是否选中这个窗口
 			Application::GetInstence().GetImGuiLayer()->SetBlockEvent(!m_ViewPortFocused && !m_ViewPortHovered);
 
-			uint64_t textureID = FrameBuffer_2D->GetColorAttachment();
+			//怪恶心的，还要加个索引，默认零
+			uint64_t textureID = FrameBuffer_2D->GetColorAttachmentRendererID();
 			//ImGui::Image((void*)textureID, ImVec2(m_ViewSize.x, m_ViewSize.y), ImVec2(0, 1), ImVec2(1, 0));
 			//更安全的版本，他没讲，看的时候看到的
 			ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2(m_ViewSize.x, m_ViewSize.y), ImVec2(0, 1), ImVec2(1, 0));
+			                      /*全局坐标，左上角是0，0，一整块电脑屏幕作为载体*/
+			ImVec2 windowSize = ImGui::GetWindowSize();
+			ImVec2 minBound = ImGui::GetWindowPos();
+			minBound.x += viewportOffset.x;
+			minBound.y += viewportOffset.y;
+			//TZ_CORE_INFO("Pixcel: {0} , {1}", minBound.x, minBound.y);
+
+			ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };
+			m_ViewportBound[0] = { minBound.x, minBound.y };
+			m_ViewportBound[1] = { maxBound.x, maxBound.y };
+
+
 
 			//ImGuizmo	ImGui小组件
 			Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();	//这个功能有点不合理，因为理论上我们要的是根据鼠标点击的地方来将那个实体赋给这个，但暂时我们先这样
@@ -371,6 +406,8 @@ namespace TribleZ
 				float windowWidth = ImGui::GetWindowWidth();
 				float windowHeight = ImGui::GetWindowHeight();
 				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);		//SetRectangle Rectangle:矩形
+
+				
 
 				//获取主相机参数
 #ifdef RUNTIME

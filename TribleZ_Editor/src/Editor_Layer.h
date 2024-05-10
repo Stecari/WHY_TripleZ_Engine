@@ -43,6 +43,7 @@ namespace TribleZ
 		//子模块
 		std::unordered_map<char, Ref<TribleZ::SubTexture2D>> m_SubTexMap;
 		//视口大小
+		glm::vec2 m_ViewportBound[2];		//第一位装左上角坐标(minBound),第一位装右下角坐标(maxBound)
 		glm::vec2 m_ViewSize;
 		uint32_t Map_Width, Map_Height;
 		//画面面板

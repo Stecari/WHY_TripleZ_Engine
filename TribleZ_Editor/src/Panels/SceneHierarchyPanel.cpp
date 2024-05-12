@@ -17,6 +17,12 @@ namespace TribleZ
 		m_Context = context;
 	}
 
+	void SceneHierarchyPanel::SetSelectionEntity(Entity entity)
+	{
+		m_SelectionContext = entity;
+	}
+
+
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
 		ImGui::Begin("SceneHierarchyPanel");

@@ -212,7 +212,7 @@ namespace TribleZ
 			}
 			else{
 				m_HoverdEntity = { (entt::entity)Pixcel, ActiveScene.get() };
-				TZ_CORE_INFO("Pixcel: {0}", Pixcel);
+				//TZ_CORE_INFO("Pixcel: {0}", Pixcel);
 			}
 		}
 
@@ -387,7 +387,18 @@ namespace TribleZ
 			}
 
 			//获取光标在全局中的位置，全局就是对于整块显示器，考虑标题栏下拉式光标下移，右上角为0，0
-			ImVec2 viewportOffset = ImGui::GetCursorPos();
+			//ImVec2 viewportOffset = ImGui::GetCursorPos();
+			//下一集新加的，之前的假如鼠标送到一些奇怪的地方读到的像素点时随机数，会导致识别报错
+			ImVec2 viewportMaxReigion = ImGui::GetWindowContentRegionMax();
+			ImVec2 viewportMinReigion = ImGui::GetWindowContentRegionMin();
+			ImVec2 viewportOffset = ImGui::GetWindowPos();
+
+			m_ViewportBound[0] = { viewportOffset.x + viewportMinReigion.x, viewportOffset.y + viewportMinReigion.y };
+			m_ViewportBound[1] = { viewportOffset.x + viewportMaxReigion.x, viewportOffset.y + viewportMaxReigion.y };
+			//TZ_CORE_TRACE("m_ViewportBound 2 :{0}, {1}", m_ViewportBound[0].x, m_ViewportBound[0].y);
+			//TZ_CORE_ERROR("m_ViewportBound 1 :{0}, {1}", m_ViewportBound[1].x, m_ViewportBound[1].y);
+
+
 
 
 			//窗口选中
@@ -400,16 +411,18 @@ namespace TribleZ
 			//ImGui::Image((void*)textureID, ImVec2(m_ViewSize.x, m_ViewSize.y), ImVec2(0, 1), ImVec2(1, 0));
 			//更安全的版本，他没讲，看的时候看到的
 			ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2(m_ViewSize.x, m_ViewSize.y), ImVec2(0, 1), ImVec2(1, 0));
-			                      /*全局坐标，左上角是0，0，一整块电脑屏幕作为载体*/
-			ImVec2 windowSize = ImGui::GetWindowSize();
-			ImVec2 minBound = ImGui::GetWindowPos();
-			minBound.x += viewportOffset.x;
-			minBound.y += viewportOffset.y;
-			//TZ_CORE_INFO("Pixcel: {0} , {1}", minBound.x, minBound.y);
 
-			ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };
-			m_ViewportBound[0] = { minBound.x, minBound.y };
-			m_ViewportBound[1] = { maxBound.x, maxBound.y };
+			/*-------------窗口鼠标信息-----------后面有点问题，改完放到上面viewportOffset旁边去了----------------------------------------------------*/
+			//                      /*全局坐标，左上角是0，0，一整块电脑屏幕作为载体*/
+			//ImVec2 windowSize = ImGui::GetWindowSize();
+			//ImVec2 minBound = ImGui::GetWindowPos();
+			//minBound.x += viewportOffset.x;
+			//minBound.y += viewportOffset.y;
+			////TZ_CORE_INFO("Pixcel: {0} , {1}", minBound.x, minBound.y);
+			//ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };
+			//m_ViewportBound[0] = { minBound.x, minBound.y };
+			//m_ViewportBound[1] = { maxBound.x, maxBound.y };		
+			/*-------------窗口鼠标信息---------------------------------------------------------------------------------------------------------------*/
 
 
 
@@ -420,9 +433,11 @@ namespace TribleZ
 				ImGuizmo::SetOrthographic(false);		//暂时关闭正交模式
 				ImGuizmo::SetDrawlist();				//看描述这个就是一个格式化的东西？
 
-				float windowWidth = ImGui::GetWindowWidth();
-				float windowHeight = ImGui::GetWindowHeight();
-				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);		//SetRectangle Rectangle:矩形
+				//float windowWidth = ImGui::GetWindowWidth();
+				//float windowHeight = ImGui::GetWindowHeight();
+				//ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);		//SetRectangle Rectangle:矩形
+				/*后期把范围缩小了*/
+				ImGuizmo::SetRect(m_ViewportBound[0].x, m_ViewportBound[0].y, m_ViewportBound[1].x - m_ViewportBound[0].x, m_ViewportBound[1].y - m_ViewportBound[0].y);
 
 				
 
@@ -435,7 +450,6 @@ namespace TribleZ
 #else
 				const glm::mat4& CameraProjection = m_EditorCamera.GetProjection();
 				glm::mat4 CameraView = m_EditorCamera.GetViewMatrix();
-
 #endif
 
 
@@ -465,8 +479,8 @@ namespace TribleZ
 				ImGuizmo::Manipulate(glm::value_ptr(CameraView), glm::value_ptr(CameraProjection), 
 					(ImGuizmo::OPERATION)m_GuizmoOperationType, ImGuizmo::LOCAL, glm::value_ptr(SelectEntitytransform), nullptr, snap? SnapValues : nullptr);
 
-				if (ImGuizmo::IsUsing())
-				{
+				if (ImGuizmo::IsUsing())		//给我们一个判断是否正在使用ImGuizmo组件的方法，如果正在使用组件就不能点击选择实体，不然在拖动的一瞬间会切换选中实体
+				{									//另一个需要的函数时IsOver()返回是否在空间上方停留，假如真的要写选中就得用IsOver()
 #ifdef STATIC_EULER_POINT
 					/*
 					* 假如直接使用也是可以的，但这个涉及到一个静态欧拉角还是动态欧拉角的问题
@@ -508,14 +522,15 @@ namespace TribleZ
 		TZ_PROFILE_FUNCTION_SIG();
 		CameraController.OnEvent(event);
 		m_EditorCamera.OnEvent(event);
-
+		TZ_CORE_INFO("IsOver : {0}", ImGuizmo::IsOver());
 		EventDispatcher dispatcher(event);
 		dispatcher.DisPatcher<EventKeyPress>(TZ_CORE_BIND_EVENT_Fn(Editor_Layer::OnEventKeyPressed));
+		dispatcher.DisPatcher<EventMouseButtonPressed>(TZ_CORE_BIND_EVENT_Fn(Editor_Layer::OnEventMouseButtonPressed));
 	}
 
 	bool Editor_Layer::OnEventKeyPressed(EventKeyPress& event)
 	{
-		if (event.GetRepeatCount() > 0) {
+		if (event.GetRepeatCount() > 0) {	//防止长按，长按的话只有第一次有用
 			return false;
 		}
 
@@ -563,7 +578,16 @@ namespace TribleZ
 			}
 		}
 	}
-
+	bool Editor_Layer::OnEventMouseButtonPressed(EventMouseButtonPressed& event)
+	{
+														/*鼠标是否在ImGuizmo控件的上方，假如在上方就说明你想要使用控件，就不能选中实体*/
+			if (event.GetMouseButton() == TZ_MOUSE_BUTTON_1 && !ImGuizmo::IsOver() && !Input::IsKeyPressed(TZ_KEY_LEFT_ALT) ) {
+				if (m_ViewPortHovered) {
+					m_SceneHierarchyPanel.SetSelectionEntity(m_HoverdEntity);
+				}
+			}
+		return false;
+	}
 	void Editor_Layer::SaveSceneAs()
 	{
 		std::string file_path = FileDialogs::SaveFile("TribleZ Scene (*.tz)\0*.tz\0");

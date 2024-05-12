@@ -67,6 +67,7 @@ namespace TribleZ
 		virtual void OnEvent(Event& event) override;
 	private:
 		bool OnEventKeyPressed(EventKeyPress& event);
+		bool OnEventMouseButtonPressed(EventMouseButtonPressed& event);
 
 		void SaveSceneAs();
 		void OpenScene();

@@ -18,6 +18,8 @@ namespace TribleZ
 		SceneHierarchyPanel(const Ref<Scene>& context);
 
 		void SetContext(const Ref<Scene>& context);
+		void SetSelectionEntity(Entity entity);
+
 
 		Entity GetSelectedEntity() const { return m_SelectionContext; }
 

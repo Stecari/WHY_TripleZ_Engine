@@ -1,11 +1,20 @@
 Scene: Scene's name
 Entities:
-  - Entity: 15151515151
+  - Entity: 1
     TagComponent:
-      Tag: tiny queb
+      Tag: buleONE
+    TransformComponent:
+      Translation: [0, 0, -1.61699665]
+      Rotation: [0, 0, 0]
+      Scale: [9.3138237, 7.70773172, 863.999878]
+    SpriteRendererComponent:
+      Color: [0.171806365, 0.392858058, 0.846975088, 1]
+  - Entity: 0
+    TagComponent:
+      Tag: firstone
     TransformComponent:
       Translation: [0, 0, 0]
-      Rotation: [-0.142822087, -0.435106903, -0.849158764]
-      Scale: [1, 1, 1]
+      Rotation: [0.503442585, -0.478835166, -0.248523638]
+      Scale: [0.99999994, 0.999999881, 200.000046]
     SpriteRendererComponent:
-      Color: [0.231759995, 0.317843944, 0.868327379, 1]
+      Color: [0.672597885, 0.117285736, 0.117285736, 1]

@@ -189,6 +189,7 @@ namespace TribleZ
 		FrameBuffer_2D->Bind();
 		RendererCommand::SetClearColor({ 0.3f, 0.3f, 0.3f, 1.0f });
 		RendererCommand::Clear();
+		FrameBuffer_2D->ClearAttachment(1, -1);
 		//更新场景
 		//ActiveScene->OnUpdataRuntime(time_step);
 		ActiveScene->OnUpdataEditor(time_step, m_EditorCamera);
@@ -206,7 +207,13 @@ namespace TribleZ
 		if (MouseX > 0 && MouseX < m_ViewSize.x && MouseY > 0 && MouseY < m_ViewSize.y)
 		{
 			int Pixcel = FrameBuffer_2D->ReadPixel(1, MouseX, MouseY);
-			TZ_CORE_INFO("Pixcel: {0}", Pixcel);
+			if (Pixcel == -1) {
+				m_HoverdEntity = {};
+			}
+			else{
+				m_HoverdEntity = { (entt::entity)Pixcel, ActiveScene.get() };
+				TZ_CORE_INFO("Pixcel: {0}", Pixcel);
+			}
 		}
 
 
@@ -343,8 +350,18 @@ namespace TribleZ
 			//显示分层面板
 			m_SceneHierarchyPanel.OnImGuiRender();
 
+			//鼠标悬停的实体ID
+			std::string hoverd_name = "NONE";
+			if (m_HoverdEntity){
+				hoverd_name = m_HoverdEntity.GetComponent<TagComponent>().Tag;
+			}
+
+
 			//数据和编辑
 			ImGui::Begin("Editor_Layer");
+
+			ImGui::Text("Hoverd Entity: %s", hoverd_name.c_str());	//显示悬停的实体
+
 			ImGui::Text("Renderer2D:");
 			ImGui::Text("DrawCall: %d", stats.DrawCallCount);
 			ImGui::Text("QuadCount: %d", stats.QuadCount);

@@ -60,7 +60,8 @@ namespace TribleZ
 		for (auto entity : group)		//根据 组 遍历实体
 		{
 			auto&& [trans, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);	//C++17 新特性，因该是tuple
-			Renderer2D::DrawQuad(trans.GetTransform(), sprite);
+			//Renderer2D::DrawQuad(trans.GetTransform(), sprite);
+			Renderer2D::DrawSprite(trans.GetTransform(), sprite, (int)entity);
 		}
 
 		Renderer2D::SceneEnd();
@@ -120,7 +121,8 @@ namespace TribleZ
 			for (auto entity : group)		//根据 组 遍历实体
 			{
 				auto&& [trans, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);	//C++17 新特性，因该是tuple
-				Renderer2D::DrawQuad(trans.GetTransform(), sprite);
+				//Renderer2D::DrawQuad(trans.GetTransform(), sprite);
+				Renderer2D::DrawSprite(trans.GetTransform(), sprite, (int)entity);
 			}
 
 			Renderer2D::SceneEnd();

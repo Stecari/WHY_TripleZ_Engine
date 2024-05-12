@@ -9,6 +9,8 @@
 #include "TribleZ_Core/Render/Texture.h"
 #include "TribleZ_Core/Render/SubTexture2D.h"
 
+#include "Scene/Component.h"
+
 
 namespace TribleZ
 {
@@ -37,8 +39,8 @@ namespace TribleZ
 
 		/*----------------------------渲染图元---------------------------------------------------------------------------------------------------------------------*/
 		//基本操作
-		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
-		static void DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingfactor = 1.0f, const glm::vec4& tintcolor = glm::vec4(1.0f));
+		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID = -1);
+		static void DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingfactor = 1.0f, const glm::vec4& tintcolor = glm::vec4(1.0f), int entityID = -1);
 		//扩展API
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
@@ -55,6 +57,9 @@ namespace TribleZ
 		static void DrawRotationQuad(const glm::vec3& position, float rotation, const glm::vec2& size, const Ref<Texture2D>& texture, const float tilingfactor = 1.0f, const glm::vec4& tintcolor = glm::vec4(1.0f));
 		static void DrawRotationQuad(const glm::vec2& position, float rotation, const glm::vec2& size, const Ref<SubTexture2D>& subtexture, const float tilingfactor = 1.0f, const glm::vec4& tintcolor = glm::vec4(1.0f));
 		static void DrawRotationQuad(const glm::vec3& position, float rotation, const glm::vec2& size, const Ref<SubTexture2D>& subtexture, const float tilingfactor = 1.0f, const glm::vec4& tintcolor = glm::vec4(1.0f));
+		
+		//绘制实体ID
+		static void DrawSprite(const glm::mat4& transform, SpriteRendererComponent& SpriteRenderComponent, int entityID = -1);
 		/*----------------------------渲染图元---------------------------------------------------------------------------------------------------------------------*/
 
 		struct Statistics

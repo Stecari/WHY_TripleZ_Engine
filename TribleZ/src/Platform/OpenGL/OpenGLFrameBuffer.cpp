@@ -78,16 +78,18 @@ namespace TribleZ
 			return false;
 		}
 
-		//static GLenum HazelFBTextureFormatToGL(FramebufferTextureFormat format)
-		//{
-		//	switch (format)
-		//	{
-		//	case FramebufferTextureFormat::RGBA8:       return GL_RGBA8;
-		//	case FramebufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
-		//	}
-		//	TZ_CORE_ASSERT(false);
-		//	return 0;
-		//}
+		static GLenum TZFrameBufferTexFormat2GL(FramebufferTextureFormat TZFormat)
+		{
+			switch (TZFormat)
+			{
+				case FramebufferTextureFormat::RGBA8:		return GL_RGBA8;
+				case FramebufferTextureFormat::RED_INTEGER:	return GL_RED_INTEGER;
+			}
+			TZ_CORE_ASSERT(false);
+			return 0;
+		}
+
+
 
 	}
 
@@ -203,10 +205,6 @@ namespace TribleZ
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBufferID);
 		glViewport(0, 0, m_Specification.Width, m_Specification.Height);
-
-		//API: ClearAttachment<float>(1
-		int value = -1;				//将m_ColorAttachments[1]代表的颜色通道里的数据用指定数值来初始化
-		glClearTexImage(m_ColorAttachments[1], 0, GL_RED_INTEGER, GL_INT, &value);
 	}
 
 	void OpenGLFrameBuffer::UnBind()
@@ -240,4 +238,14 @@ namespace TribleZ
 		return pixelData;
 
 	}
+
+	void OpenGLFrameBuffer::ClearAttachment(uint32_t attachmentIndex, int value)
+	{
+		TZ_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
+
+		auto format = m_ColorAttachmentSpecifications[attachmentIndex].TextureFormat;
+		//将m_ColorAttachments[index]代表的颜色通道里的数据用指定数值来初始化
+		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, Utils::TZFrameBufferTexFormat2GL(format), GL_INT, &value);
+	}
+
 }

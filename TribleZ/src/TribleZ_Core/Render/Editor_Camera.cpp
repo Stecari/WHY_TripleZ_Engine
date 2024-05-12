@@ -103,13 +103,13 @@ namespace TribleZ
 		//这个是Cherno当年自己算出来的一个计算方程，我不知道我们参数不一样会不有问题，到时候可能自己还要试着算一次
 		float x = std::min(m_ViewportWidth / 1000.0f, 2.40f);	//最大为2.4		标准库std里面的max和min真的很奇怪
 		//float xFactor = 0.0366 * (x * x) - 0.1778f * x + 0.3021f;
-		float xFactor = 4.1366 * (x * x) - 1.1778f * x + 0.3021f;
+		float xFactor = 2.6366 * (x * x) - 1.1778f * x + 0.3021f;
 
 		float y = std::min(m_ViewportHeight / 1000.0f, 2.4f);
 		//float yFactor = 0.0366 * (y * y) - 0.1778f * y + 0.3021f;
-		float yFactor = 4.1366 * (y * y) - 1.1778f * y + 0.3021f;
+		float yFactor = 2.6366 * (y * y) - 1.1778f * y + 0.3021f;
 
-		return { 10 * xFactor, 10 * yFactor };
+		return { xFactor, yFactor };
 	}
 	float Editor_Camera::RotationSpeed() const
 	{

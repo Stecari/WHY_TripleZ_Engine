@@ -17,6 +17,8 @@ namespace TribleZ
 		Entity(const Entity& other) = default;
 		Entity() = default;
 
+		uint64_t GetUniqueID() const ;
+
 		operator uint32_t() const { return (uint32_t)m_EntityHandle; }
 		/*operator重载操作符，用在if(Entity) 判断Entity是否为空时*/
 		operator bool() const { return m_EntityHandle != entt::null; }

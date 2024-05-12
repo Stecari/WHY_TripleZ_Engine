@@ -17,6 +17,9 @@ struct Vertex
 	glm::vec2	TexCoord;
 	float		TexIndex;
 	float		TilingFector;
+
+	//仅仅为了Editor
+	int		EntityID;
 };
 
 
@@ -63,11 +66,12 @@ namespace TribleZ
 		//m_VertexBuffer->Bind();
 		/*----顶点数组使能并设置布局----*/
 		BufferLayout layout({
-			{ "a_Position", ShaderDataType::Float3 },
-			{ "a_Color",	ShaderDataType::Float4 },
-			{ "a_TexCoord", ShaderDataType::Float2 },
-			{ "a_TexIndex",	ShaderDataType::Float1 },
-			{ "a_Tiling",	ShaderDataType::Float1 }
+			{ "a_Position",		ShaderDataType::Float3	},
+			{ "a_Color",		ShaderDataType::Float4	},
+			{ "a_TexCoord",		ShaderDataType::Float2	},
+			{ "a_TexIndex",		ShaderDataType::Float1	},
+			{ "a_Tiling",		ShaderDataType::Float1	},
+			{ "a_EntityID",		ShaderDataType::Int1	}
 			});
 		m_DataBase.Quad_VertexBuffer->SetLayout(layout); //绑定缓冲区前先设置布局，不然里面没东西
 		m_DataBase.Quad_VertexArray->AddVertexBuffer(m_DataBase.Quad_VertexBuffer);
@@ -203,7 +207,7 @@ namespace TribleZ
 		m_DataBase.VertexBufferDataPtr = m_DataBase.VertexBufferDataBase;
 	}
 	/*-------------------------------------------------------渲染图元基础模式------------------------------------------------------------------------------------*/
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID)
 	{
 		const float tex_index = 0.0f;
 		constexpr float tex_coord[8] = {	//用来绑定纹理的四个点
@@ -222,12 +226,13 @@ namespace TribleZ
 			m_DataBase.VertexBufferDataPtr->TexCoord = { tex_coord[i * 2], tex_coord[i * 2 + 1] };
 			m_DataBase.VertexBufferDataPtr->TexIndex = tex_index;
 			m_DataBase.VertexBufferDataPtr->TilingFector = 1.0f;
+			m_DataBase.VertexBufferDataPtr->EntityID = entityID;
 			m_DataBase.VertexBufferDataPtr++;
 		}
 		m_DataBase.Quad_IndexCount += 6;
 		m_DataBase.Stats.QuadCount++;
 	}
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingfactor, const glm::vec4& tintcolor)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingfactor, const glm::vec4& tintcolor, int entityID)
 	{
 		float tex_index = 0;			//我们要画的纹理的索引
 		constexpr float tex_coord[8] = {	//用来绑定纹理的四个点
@@ -542,6 +547,13 @@ namespace TribleZ
 		m_DataBase.Stats.QuadCount++;
 	}
 	/*-----------------------------------------------------------旋转版本----------------------------------------------------------------------------------------*/
+
+	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& SpriteRenderComponent, int entityID)
+	{
+		DrawQuad(transform, SpriteRenderComponent.Color, entityID);
+	}
+
+
 
 	/*-------------------统计相关----------------------------*/
 	/*-------------重置统计----------------*/

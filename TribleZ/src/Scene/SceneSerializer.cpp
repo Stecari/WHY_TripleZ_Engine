@@ -36,7 +36,9 @@ namespace TribleZ
 	{
 		out << YAML::BeginMap;	//开始对Entity键值对的映射
 		out << YAML::Key << "Entity";
-		out << YAML::Value << "15151515151";	//值是这个entity的唯一ID号
+		uint64_t EntityID = entity.GetUniqueID();
+		//out << YAML::Value << "15151515151";	//值是这个entity的唯一ID号
+		out << YAML::Value << std::to_string(EntityID);	//值是这个entity的唯一ID号
 
 		//开始挨个序列化entity
 		if (entity.HasComponent<TagComponent>())

@@ -69,14 +69,58 @@ namespace TribleZ
 		int index = 0;
 		for (const BufferElement& element : vertex_buffer->GetLayout())
 		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index, /*顶点元素索引*/
-			/*有几个数据*/		  element.GetComponentCount(),
-			/*数据类型*/		  ShaderDataTypeToGLType(element.Type),
-			/*标准化*/			  element.Normalized ? GL_FALSE : GL_TRUE,
-			/*两个点间的字节数*/  vertex_buffer->GetLayout().GetStride(),
-			/*元素起始字节*/	  (const void*)element.Offset);
-			index++;
+			switch (element.Type)
+				{
+				case ShaderDataType::Float1:
+				case ShaderDataType::Float2:
+				case ShaderDataType::Float3:
+				case ShaderDataType::Float4:
+				{
+					glEnableVertexAttribArray(index);
+					glVertexAttribPointer(index, /*顶点元素索引*/
+					/*有几个数据*/		  element.GetComponentCount(),
+					/*数据类型*/		  ShaderDataTypeToGLType(element.Type),
+					/*标准化*/			  element.Normalized ? GL_FALSE : GL_TRUE,
+					/*两个点间的字节数*/  vertex_buffer->GetLayout().GetStride(),
+					/*元素起始字节*/	  (const void*)element.Offset);
+					index++;
+					break;
+				}
+				case ShaderDataType::Int1:
+				case ShaderDataType::Int2:
+				case ShaderDataType::Int3:
+				case ShaderDataType::Int4:
+				case ShaderDataType::Bool:
+				{
+					glEnableVertexAttribArray(index);
+					glVertexAttribIPointer(index, /*顶点元素索引*/			//和上面的API不一样，中间多了一个I表示是给int准备的
+					/*有几个数据*/		  element.GetComponentCount(),
+					/*数据类型*/		  ShaderDataTypeToGLType(element.Type),
+					/*两个点间的字节数*/  vertex_buffer->GetLayout().GetStride(),
+					/*元素起始字节*/	  (const void*)element.Offset);
+					index++;
+					break;
+				}
+				case ShaderDataType::Mat3:		//实例渲染，还没讲，隐藏大佬推送上去的
+				case ShaderDataType::Mat4:
+				{
+					uint8_t count = element.GetComponentCount();
+					for (uint8_t i = 0; i < count; i++)
+					{
+						glEnableVertexAttribArray(index);
+						glVertexAttribPointer(index, /*顶点元素索引*/
+						/*有几个数据*/		  count,
+						/*数据类型*/		  ShaderDataTypeToGLType(element.Type),
+						/*标准化*/			  element.Normalized ? GL_FALSE : GL_TRUE,
+						/*两个点间的字节数*/  vertex_buffer->GetLayout().GetStride(),
+						/*元素起始字节*/	  (const void*)(element.Offset + sizeof(float) * count * i));
+						glVertexAttribDivisor(index, 1);
+						index++;
+					}
+					
+					break;
+				}
+			}
 		}
 
 		m_VertexBuffers.push_back(vertex_buffer);

@@ -51,6 +51,8 @@ namespace TribleZ
 		//窗口选中和鼠标悬停
 		bool m_ViewPortFocused;
 		bool m_ViewPortHovered;
+
+		Entity m_HoverdEntity;
 		//ImGui控件操作模式：平移、旋转、缩放
 		int m_GuizmoOperationType = -1;
 

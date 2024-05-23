@@ -1,10 +1,13 @@
 #pragma once
+//我都不记得这两句是那个时候加进来的了
+#include "TribleZ_Core/Core.h"
+#include "TribleZ_Core/Application.h"
+
 #ifdef TZ_PLATFORM_WINDOWS
 
-#include "TribleZ_Core/Core.h"
 #include "Tool/BenchMarking.h"
 
-extern TribleZ::Application* TribleZ::CreatApplication();
+extern TribleZ::Application* TribleZ::CreatApplication(ApplicationCommandLineArgs Args);
 
 int main(int argc, char** argv)
 {
@@ -21,8 +24,8 @@ int main(int argc, char** argv)
 	//TribleZ::Log::GetClientLogger()->info("Positional args are {1} {0}..", "too", "supported");
 	//TribleZ::Log::GetClientLogger()->info("{:<30}", "left aligned");
 	std::cout << "TribleZ Engine Loading Start!" << std::endl;
-
-	auto app = TribleZ::CreatApplication();
+											//这下知道这两是啥了，一个是Arg数量，另一个是Arg值,都是命令行参数
+	auto app = TribleZ::CreatApplication({ argc, argv });
 	TZ_PROFILE_END_SESSION();
 
 	TZ_PROFILE_BEGIN_SESSION("RunTime", "TribleZProfile-RunTime.json")

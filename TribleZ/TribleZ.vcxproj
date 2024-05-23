@@ -76,12 +76,12 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>tzpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;_CRT_SECURE_NO_WARNINGS;TZ_PLATFORM_WINDOWS;TZ_BUILD_DLL;_WINDLL;_UNICODE;UNICODE;TZ_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;TZ_PLATFORM_WINDOWS;TZ_BUILD_DLL;_WINDLL;_UNICODE;UNICODE;TZ_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;D:\Vulkan\Vulkan1.3.283.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -91,7 +91,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;D:\Vulkan\Vulkan1.3.283.0\Lib\shaderc_shared.lib;D:\Vulkan\Vulkan1.3.283.0\Lib\spirv-cross-cored.lib;D:\Vulkan\Vulkan1.3.283.0\Lib\spirv-cross-glsld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -99,14 +99,14 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>tzpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;_CRT_SECURE_NO_WARNINGS;TZ_PLATFORM_WINDOWS;TZ_BUILD_DLL;_WINDLL;_UNICODE;UNICODE;TZ_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;TZ_PLATFORM_WINDOWS;TZ_BUILD_DLL;_WINDLL;_UNICODE;UNICODE;TZ_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;D:\Vulkan\Vulkan1.3.283.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -117,7 +117,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;D:\Vulkan\Vulkan1.3.283.0\Lib\shaderc_shared.lib;D:\Vulkan\Vulkan1.3.283.0\Lib\spirv-cross-core.lib;D:\Vulkan\Vulkan1.3.283.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -125,14 +125,14 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>tzpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;_CRT_SECURE_NO_WARNINGS;TZ_PLATFORM_WINDOWS;TZ_BUILD_DLL;_WINDLL;_UNICODE;UNICODE;TZ_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;TZ_PLATFORM_WINDOWS;TZ_BUILD_DLL;_WINDLL;_UNICODE;UNICODE;TZ_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;D:\Vulkan\Vulkan1.3.283.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -143,7 +143,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;D:\Vulkan\Vulkan1.3.283.0\Lib\shaderc_shared.lib;D:\Vulkan\Vulkan1.3.283.0\Lib\spirv-cross-core.lib;D:\Vulkan\Vulkan1.3.283.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -572,6 +572,7 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\Scene\Component.h" />
@@ -581,6 +582,7 @@
     <ClInclude Include="src\Scene\ScriptableEntity.h" />
     <ClInclude Include="src\Scene\YAMLBatchForGLM.h" />
     <ClInclude Include="src\Tool\BenchMarking.h" />
+    <ClInclude Include="src\Tool\TZ_Timer.h" />
     <ClInclude Include="src\Tool\Time.h" />
     <ClInclude Include="src\TribleZ.h" />
     <ClInclude Include="src\TribleZMath\TribleZMath.h" />
@@ -612,6 +614,7 @@
     <ClInclude Include="src\TribleZ_Core\Render\Shader.h" />
     <ClInclude Include="src\TribleZ_Core\Render\SubTexture2D.h" />
     <ClInclude Include="src\TribleZ_Core\Render\Texture.h" />
+    <ClInclude Include="src\TribleZ_Core\Render\UniformBuffer.h" />
     <ClInclude Include="src\TribleZ_Core\Render\VertexArray.h" />
     <ClInclude Include="src\TribleZ_Core\TimeStep.h" />
     <ClInclude Include="src\TribleZ_Core\Window.h" />
@@ -631,6 +634,7 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
@@ -656,6 +660,7 @@
     <ClCompile Include="src\TribleZ_Core\Render\Shader.cpp" />
     <ClCompile Include="src\TribleZ_Core\Render\SubTexture2D.cpp" />
     <ClCompile Include="src\TribleZ_Core\Render\Texture.cpp" />
+    <ClCompile Include="src\TribleZ_Core\Render\UniformBuffer.cpp" />
     <ClCompile Include="src\TribleZ_Core\Render\VertexArray.cpp" />
     <ClCompile Include="src\TribleZ_Core\Window.cpp" />
     <ClCompile Include="src\tzpch.cpp">

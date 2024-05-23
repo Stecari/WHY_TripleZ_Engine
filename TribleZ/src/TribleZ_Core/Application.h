@@ -19,6 +19,18 @@
 
 namespace TribleZ
 {
+	struct ApplicationCommandLineArgs		//命令行参数
+	{
+		int Count = 0;
+		char** Args = nullptr;
+
+		char* operator[](int index)
+		{
+			TZ_CORE_ASSERT(index < Count);
+			return Args[index];
+		}
+	};
+
 	class TRIBLEZ_API Application
 	{
 	private:
@@ -30,14 +42,16 @@ namespace TribleZ
 		bool Running_Flag = true;
 		LayerStack m_LayersStack;
 
+		ApplicationCommandLineArgs m_CommandLineArgs;
 
 	public:
-		Application(const std::string& name = "TribleZ_APP");
+		Application(const std::string& name = "TribleZ_APP", ApplicationCommandLineArgs Args = ApplicationCommandLineArgs());
 		virtual ~Application();
 
 		inline static Application& GetInstence() { return *APP_Instance; }
 		inline Window& GetWindow() { return *m_Window; }
 		inline ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
+		ApplicationCommandLineArgs GetCommandLineArgs() const { return m_CommandLineArgs; }
 
 		void PushLayer(Layer* layer);			//这俩就是个包装函数
 		void PushOverlayer(Layer* overlayer);	//还是要靠m_LayersStack的push函数
@@ -58,7 +72,7 @@ namespace TribleZ
 
 	};
 	/*由于这个是创建APP对象，也就是搭建客户端，而每个客户端都是不一样的，这不是引擎里要做的事，所以这个函数我们放在客户端(sandbox)定义*/
-	Application* CreatApplication();
+	Application* CreatApplication(ApplicationCommandLineArgs Args);
 }
 
 

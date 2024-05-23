@@ -49,6 +49,9 @@
     <Filter Include="src\Tool">
       <UniqueIdentifier>{BA2526CF-A6F2-80DA-CF0B-6F82BB37B668}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\TribleZMath">
+      <UniqueIdentifier>{82185536-EEA3-C2FA-F7B4-45EF63BF1EFB}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\TribleZ_Core">
       <UniqueIdentifier>{E05A2D02-CC53-4C54-F585-31D9E1DD2B60}</UniqueIdentifier>
     </Filter>
@@ -1341,6 +1344,9 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
@@ -1368,11 +1374,17 @@
     <ClInclude Include="src\Tool\BenchMarking.h">
       <Filter>src\Tool</Filter>
     </ClInclude>
+    <ClInclude Include="src\Tool\TZ_Timer.h">
+      <Filter>src\Tool</Filter>
+    </ClInclude>
     <ClInclude Include="src\Tool\Time.h">
       <Filter>src\Tool</Filter>
     </ClInclude>
     <ClInclude Include="src\TribleZ.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TribleZMath\TribleZMath.h">
+      <Filter>src\TribleZMath</Filter>
     </ClInclude>
     <ClInclude Include="src\TribleZ_Core\Application.h">
       <Filter>src\TribleZ_Core</Filter>
@@ -1425,6 +1437,9 @@
     <ClInclude Include="src\TribleZ_Core\Render\Camera.h">
       <Filter>src\TribleZ_Core\Render</Filter>
     </ClInclude>
+    <ClInclude Include="src\TribleZ_Core\Render\Editor_Camera.h">
+      <Filter>src\TribleZ_Core\Render</Filter>
+    </ClInclude>
     <ClInclude Include="src\TribleZ_Core\Render\FrameBuffer.h">
       <Filter>src\TribleZ_Core\Render</Filter>
     </ClInclude>
@@ -1455,6 +1470,9 @@
     <ClInclude Include="src\TribleZ_Core\Render\Texture.h">
       <Filter>src\TribleZ_Core\Render</Filter>
     </ClInclude>
+    <ClInclude Include="src\TribleZ_Core\Render\UniformBuffer.h">
+      <Filter>src\TribleZ_Core\Render</Filter>
+    </ClInclude>
     <ClInclude Include="src\TribleZ_Core\Render\VertexArray.h">
       <Filter>src\TribleZ_Core\Render</Filter>
     </ClInclude>
@@ -1470,8 +1488,6 @@
     <ClInclude Include="src\tzpch.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\TribleZMath\TribleZMath.h" />
-    <ClInclude Include="src\TribleZ_Core\Render\Editor_Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Gitvender\ImGuizmo\ImGuizmo.cpp">
@@ -1504,6 +1520,9 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -1525,6 +1544,9 @@
     <ClCompile Include="src\Scene\SceneSerializer.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\TribleZMath\TribleZMath.cpp">
+      <Filter>src\TribleZMath</Filter>
+    </ClCompile>
     <ClCompile Include="src\TribleZ_Core\Application.cpp">
       <Filter>src\TribleZ_Core</Filter>
     </ClCompile>
@@ -1544,6 +1566,9 @@
       <Filter>src\TribleZ_Core\Render</Filter>
     </ClCompile>
     <ClCompile Include="src\TribleZ_Core\Render\Camera.cpp">
+      <Filter>src\TribleZ_Core\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TribleZ_Core\Render\Editor_Camera.cpp">
       <Filter>src\TribleZ_Core\Render</Filter>
     </ClCompile>
     <ClCompile Include="src\TribleZ_Core\Render\FrameBuffer.cpp">
@@ -1573,6 +1598,9 @@
     <ClCompile Include="src\TribleZ_Core\Render\Texture.cpp">
       <Filter>src\TribleZ_Core\Render</Filter>
     </ClCompile>
+    <ClCompile Include="src\TribleZ_Core\Render\UniformBuffer.cpp">
+      <Filter>src\TribleZ_Core\Render</Filter>
+    </ClCompile>
     <ClCompile Include="src\TribleZ_Core\Render\VertexArray.cpp">
       <Filter>src\TribleZ_Core\Render</Filter>
     </ClCompile>
@@ -1582,7 +1610,5 @@
     <ClCompile Include="src\tzpch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\TribleZMath\TribleZMath.cpp" />
-    <ClCompile Include="src\TribleZ_Core\Render\Editor_Camera.cpp" />
   </ItemGroup>
 </Project>

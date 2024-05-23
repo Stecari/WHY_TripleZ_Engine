@@ -132,8 +132,8 @@ namespace TribleZ
 
 	void Scene::ResizeView(uint32_t width, uint32_t height)
 	{
-		ViewWidth = width;
-		ViewHeight = height;
+		m_ViewWidth = width;
+		m_ViewHeight = height;
 
 		//对长宽比不固定的相机进行长宽比重置
 		auto view = m_Registry.view<CameraComponent>();
@@ -186,7 +186,10 @@ namespace TribleZ
 	template<>
 	void Scene::OnComponentAdding<CameraComponent>(Entity entity, CameraComponent& component)
 	{
-		component.Camera.OnResizeView(ViewWidth, ViewHeight);
+		//component.Camera.OnResizeView(m_ViewWidth, m_ViewHeight);
+		if (m_ViewWidth > 0 && m_ViewHeight > 0){
+			component.Camera.OnResizeView(m_ViewWidth, m_ViewHeight);
+		}
 	}
 
 	template<>

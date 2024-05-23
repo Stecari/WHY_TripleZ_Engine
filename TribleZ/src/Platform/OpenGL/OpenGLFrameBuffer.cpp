@@ -142,13 +142,15 @@ namespace TribleZ
 				switch (m_ColorAttachmentSpecifications[i].TextureFormat)
 				{
 				case FramebufferTextureFormat::RGBA8:
-					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Sample, GL_RGBA8, GL_RGBA, m_Specification.Width, m_Specification.Height, i);
+					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Sample, GL_RGBA8, GL_RGBA,
+											  m_Specification.Width, m_Specification.Height, i);
 					break;
 				case FramebufferTextureFormat::RED_INTEGER:
-					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Sample, GL_R32I, GL_RED_INTEGER, m_Specification.Width, m_Specification.Height, i);
+					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Sample, GL_R32I, GL_RED_INTEGER,
+											  m_Specification.Width, m_Specification.Height, i);
 					break;
-		}
-	}
+				}
+			}
 		}
 
 		if (m_DepthAttachmentSpecification.TextureFormat != FramebufferTextureFormat::None)

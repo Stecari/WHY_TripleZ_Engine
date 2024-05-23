@@ -522,7 +522,7 @@ namespace TribleZ
 		TZ_PROFILE_FUNCTION_SIG();
 		CameraController.OnEvent(event);
 		m_EditorCamera.OnEvent(event);
-		TZ_CORE_INFO("IsOver : {0}", ImGuizmo::IsOver());
+		//TZ_CORE_INFO("IsOver : {0}", ImGuizmo::IsOver());
 		EventDispatcher dispatcher(event);
 		dispatcher.DisPatcher<EventKeyPress>(TZ_CORE_BIND_EVENT_Fn(Editor_Layer::OnEventKeyPressed));
 		dispatcher.DisPatcher<EventMouseButtonPressed>(TZ_CORE_BIND_EVENT_Fn(Editor_Layer::OnEventMouseButtonPressed));

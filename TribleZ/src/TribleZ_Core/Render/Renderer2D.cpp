@@ -1,11 +1,13 @@
 #include "tzpch.h"
 #include "Renderer2D.h"
 #include "TribleZ_Core/Render/Shader.h"
+#include "TribleZ_Core/Render/UniformBuffer.h"
 #include "TribleZ_Core/Render/VertexArray.h"
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "TribleZ_Core/Render/RendererCommand.h"
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 //#include <glad/glad.h>
@@ -49,6 +51,13 @@ namespace TribleZ
 		glm::vec4 VertexOriPosition[4];
 
 		Renderer2D::Statistics Stats;
+
+		struct CameraData
+		{
+			glm::mat4 ViewProjection;
+		};
+		CameraData CameraBuffer;					
+		Ref<UniformBuffer> CameraUniformBuffer; //相机缓存区
 	};
 	static Renderer2D_Data m_DataBase;
 
@@ -113,24 +122,25 @@ namespace TribleZ
 		unsigned int WhiteTextureData = 0xffffffff;				/* 0xff ff ff ff */
 		m_DataBase.WhiteTexture->SetData(&WhiteTextureData, sizeof(uint32_t));
 		m_DataBase.TextureSlotBase[0] = m_DataBase.WhiteTexture;	//0号插槽是白纹理
+		/*--------------------纹理采样槽-------------------------------------------------------------*/
+		int texture[32];
+		for (int i = 0; i < m_DataBase.MaxTextureSlot; i++){
+			texture[i] = i;
+		}
 		/*--------------------绘制基准点-------------------------------------------------------------*/
 		m_DataBase.VertexOriPosition[0] = {-0.5f, -0.5f, 0.0f, 1.0f};		//左下
 		m_DataBase.VertexOriPosition[1] = { 0.5f, -0.5f, 0.0f, 1.0f};		//右下
 		m_DataBase.VertexOriPosition[2] = { 0.5f,  0.5f, 0.0f, 1.0f};		//右上
 		m_DataBase.VertexOriPosition[3] = {-0.5f,  0.5f, 0.0f, 1.0f};		//左上
-		/*-----------------------设置参考-------------------------------------------------------------*/
+		/*------------------创建相机缓冲区-----------------------------------------------------------*/
+		m_DataBase.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2D_Data::CameraData), 0);
 
 		/*-------------------读取着色器源码-----------------------------------------------------------*/
-		m_DataBase.Texture_Shader = Shader::Create("asserts/shader/Editor_TextureShader.glsl");
-		//m_DataBase.Texture_Shader = Shader::Create("asserts/shader/Editor_TextureShader_official.glsl");
+		//m_DataBase.Texture_Shader = Shader::Create("asserts/shader/Editor_TextureShader.glsl");
+		m_DataBase.Texture_Shader = Shader::Create("asserts/shader/Editor_TextureShader_official.glsl");
 		/*-------------------读取着色器源码-----------------------------------------------------------*/
-		m_DataBase.Texture_Shader->Bind();
-		int texture[32];
-		for (int i = 0; i < m_DataBase.MaxTextureSlot; i++)
-		{
-			texture[i] = i;
-		}
-		m_DataBase.Texture_Shader->SetIntArray("u_Texture", texture, 32);//将texture[32]数组传给uniform u_Texture
+		//m_DataBase.Texture_Shader->Bind();
+		//m_DataBase.Texture_Shader->SetIntArray("u_Texture", texture, 32);//将texture[32]数组传给uniform u_Texture
 	}
 
 	void Renderer2D::ShutDown()
@@ -146,14 +156,20 @@ namespace TribleZ
 
 		glm::mat4 ViewProjection = camera.GetProjection() * glm::inverse(transform);	//由于是相机的变换所以要取反
 
-		m_DataBase.Texture_Shader->Bind();
-		m_DataBase.Texture_Shader->SetMat4("u_ViewProjection", ViewProjection);
+		m_DataBase.CameraBuffer.ViewProjection = ViewProjection;
+		m_DataBase.CameraUniformBuffer->SetData(&m_DataBase.CameraBuffer, sizeof(Renderer2D_Data::CameraData), 0);
+		//老API
+		//m_DataBase.Texture_Shader->Bind();
+		//m_DataBase.Texture_Shader->SetMat4("u_ViewProjection", ViewProjection);
+
 	}
 	void Renderer2D::SceneBegin(const OrthoGraphicCamera& camera)	
 	{
 		TZ_PROFILE_FUNCTION_SIG();
 		StartBatch();
-
+		//不知道为什么这个不用改，可能是用不上吧
+		//m_DataBase.CameraBuffer.ViewProjection = camera.GetViewProjectMat();
+		//m_DataBase.CameraUniformBuffer->SetData(&m_DataBase.CameraBuffer, sizeof(Renderer2D_Data::CameraData), 0)
 		m_DataBase.Texture_Shader->Bind();
 		m_DataBase.Texture_Shader->SetMat4("u_ViewProjection", camera.GetViewProjectMat());
 	}
@@ -162,10 +178,12 @@ namespace TribleZ
 		TZ_PROFILE_FUNCTION_SIG();
 		StartBatch();
 
-		glm::mat4 ViewProjection = camera.GetViewProjection();	//由于是相机的变换所以要取反
+		m_DataBase.CameraBuffer.ViewProjection = camera.GetViewProjection();
+		m_DataBase.CameraUniformBuffer->SetData(&m_DataBase.CameraBuffer, sizeof(Renderer2D_Data::CameraData), 0);
 
-		m_DataBase.Texture_Shader->Bind();
-		m_DataBase.Texture_Shader->SetMat4("u_ViewProjection", ViewProjection);
+		//glm::mat4 ViewProjection = camera.GetViewProjection();	//由于是相机的变换所以要取反
+		//m_DataBase.Texture_Shader->Bind();
+		//m_DataBase.Texture_Shader->SetMat4("u_ViewProjection", ViewProjection);
 	}
 
 	void Renderer2D::StartBatch()
@@ -187,13 +205,16 @@ namespace TribleZ
 
 	void Renderer2D::Flush()
 	{
-		TZ_PROFILE_FUNCTION_SIG();
+		//if (m_DataBase.Quad_IndexCount == 0)
+			//return; // Nothing to draw
 
-		for (int i = 0; i < m_DataBase.TextureSlotIndex; i++)		//绑定纹理
-		{															
+		for (int i = 0; i < m_DataBase.TextureSlotIndex; i++) {		//绑定纹理									
 			m_DataBase.TextureSlotBase[i]->Bind(i);	//绑定i号插槽   
-		}															
-		m_DataBase.Quad_VertexArray->Bind();						//绑定顶点数组
+		}
+		/*-----???----------------------*/		//有问题
+		m_DataBase.Texture_Shader->Bind();		//不知道为什么有
+		m_DataBase.Quad_VertexArray->Bind();	//不知道为什么没有		//绑定顶点数组
+		/*-----???----------------------*/
 		RendererCommand::DrawIndex(m_DataBase.Quad_VertexArray, m_DataBase.Quad_IndexCount);
 		m_DataBase.Stats.DrawCallCount++;
 	}

@@ -21,7 +21,7 @@ namespace TribleZ
 																				//返回一个函数指针
 	Application* Application::APP_Instance = nullptr;		//声明
 
-	Application::Application(const std::string& name)		//应用初始化
+	Application::Application(const std::string& name, ApplicationCommandLineArgs Args)		//应用初始化
 	{
 		TZ_PROFILE_FUNCTION_SIG();
 

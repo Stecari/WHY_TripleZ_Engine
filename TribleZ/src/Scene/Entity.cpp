@@ -1,5 +1,7 @@
 #include "tzpch.h"
 #include "Entity.h"
+#include <shaderc/shaderc.h>
+#include <spirv_cross/GLSL.std.450.h>
 
 namespace TribleZ
 {

@@ -16,7 +16,7 @@ namespace TribleZ
 		friend class SceneHierarchyPanel;
 		entt::registry m_Registry;  //注册表，负责收集实体组件的数据和实体ID
 
-		uint32_t ViewWidth, ViewHeight;
+		uint32_t m_ViewWidth, m_ViewHeight;
 
 	public:
 		Scene();

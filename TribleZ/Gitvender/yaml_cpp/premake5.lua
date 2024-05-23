@@ -26,12 +26,14 @@ project "yaml-cpp"
 	filter "system:windows"
 		systemversion "latest"
 		cppdialect "C++17"
-		staticruntime "on"		--这里cherno忘记讲了，由于我们要把它作为静态库链接，所以要改为on
+		--cppdialect "C++20"
+		staticruntime "off"		--这里cherno忘记讲了，由于我们要把它作为静态库链接，所以要改为on
 
 	filter "system:linux"
 		pic "On"
 		systemversion "latest"
 		cppdialect "C++17"
+		--cppdialect "C++20"
 		staticruntime "off"
 
 	filter "configurations:Debug"

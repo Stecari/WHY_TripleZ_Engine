@@ -16,6 +16,7 @@
 
 namespace TribleZ
 {
+	//std::optional<std::string> FileDialogs::OpenFile(const char* filter)
 	/*返回文件的绝对路径*/
 	std::string FileDialogs::OpenFile(const char* filter)
 	{
@@ -35,9 +36,11 @@ namespace TribleZ
 		if (GetOpenFileNameA(&Openfilename) == TRUE){				//假如没有最后一个的话，调用GetOpenFileNameA的时候会将你Application的工作目录改成你打开的文件的那个文件夹
 			return Openfilename.lpstrFile;							//VS设置的默认工作目录时项目路径，可以在右键项目的属性中的调试中查看，假如你运行一个exe文件，这个路径就是你exe文件的路径(除非你有一个快捷方式)
 		}												//假如没有设置这个，那么你在打开或者保存文件的时候改变了工作目录，就会影响到Application程序其余部分的文件的加载，他们会被加载到像是assert/scene之类的地方而不是根目录
+		//return std::nullopt();
 		return std::string();
 
 	}
+	//std::optional<std::string> FileDialogs::SaveFile(const char* filter)
 	std::string FileDialogs::SaveFile(const char* filter)
 	{
 		OPENFILENAMEA Openfilename;
@@ -53,6 +56,7 @@ namespace TribleZ
 		if (GetSaveFileNameA(&Openfilename) == TRUE) {
 			return Openfilename.lpstrFile;
 		}
+		//return std::nullopt();
 		return std::string();
 	}
 }

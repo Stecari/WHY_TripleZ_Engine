@@ -34,7 +34,7 @@ public:			//由于SandBox是Application的子类，所以在构造之前会先构造Application
 
 };
 
-TribleZ::Application* TribleZ::CreatApplication()
+TribleZ::Application* TribleZ::CreatApplication(/*ApplicationCommandLineArgs Args*/)
 {
 	return new SandBox;
 }

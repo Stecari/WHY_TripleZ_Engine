@@ -7,6 +7,7 @@
 
 //后面要想办法撤掉
 typedef unsigned int GLenum;
+typedef GLenum GLShaderType;
 
 namespace TribleZ
 {
@@ -26,16 +27,32 @@ namespace TribleZ
 		std::unordered_map<std::string, int> UniNameMap;
 
 		std::string m_Name;
+		std::string m_FilePath;
+
+		//两个二进制缓存
+		std::unordered_map<GLenum, std::vector<uint32_t>> m_VulkanSPIRVCache;
+		std::unordered_map<GLenum, std::vector<uint32_t>> m_OpenGLSPIRVCache;	
+
+		//换算成的OpenGL源码
+		std::unordered_map<GLenum, std::string>	m_OpenGLSourceCode;
 
 	public:
 		OpenGLShader(const std::string& filepath);
 		OpenGLShader(const std::string& name, const std::string& vertex_source, const std::string& fragment_source);
 		~OpenGLShader();
 
-		std::string ReadFile(const std::string& filepath);
-		std::unordered_map<GLenum, std::string> PreProcess(const std::string& src_code);
 		void CompileShader(const std::unordered_map<GLenum, std::string>& source_map);
 
+	private:
+		std::string ReadFile(const std::string& filepath);
+		std::unordered_map<GLenum, std::string> PreProcess(const std::string& src_code);
+
+		void CompiledOrGetVulkanBinaries(const std::unordered_map<GLenum, std::string>& source_map);				  
+		void CompiledOrGetOpenGLBinaries();																			  
+		void CreatePrograme();																						  
+		void Reflect(/*GLShadertype*/ GLenum stage, std::vector<uint32_t>& shaderData);								  
+
+	public:
 		virtual const std::string& GetName() const override { return m_Name; }
 
 		/*----------------统一变量API------------------------------------------------------------------------*/

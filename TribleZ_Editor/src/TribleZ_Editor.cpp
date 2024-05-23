@@ -31,7 +31,7 @@ namespace TribleZ
 
 	};
 
-	Application* CreatApplication()
+	Application* CreatApplication(ApplicationCommandLineArgs Args)
 	{
 		return new TribleZ_Editor;
 	}

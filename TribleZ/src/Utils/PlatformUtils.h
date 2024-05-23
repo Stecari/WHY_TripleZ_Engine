@@ -14,6 +14,8 @@ namespace TribleZ
 		* 这两个函数返回一个字符串，就是我们要操作的文件的绝对路径
 		* 假如中途取消就会返回空字符串
 		*/
+		//static std::optional<std::string> OpenFile(const char* filter);	//可能会返回空的东西
+		//static std::optional<std::string> SaveFile(const char* filter);
 		static std::string OpenFile(const char* filter);		//这个过滤器会随着平台变化有一点不同，但现在只考虑Windows
 		static std::string SaveFile(const char* filter);
 	};

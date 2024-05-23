@@ -1,5 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
+//#define YAML_CPP_STATIC_DEFINE
+
 #include <yaml-cpp/yaml.h>
 
 /*YAML文件对glm中的数据类型的一些编码和解码操作的补丁函数*/

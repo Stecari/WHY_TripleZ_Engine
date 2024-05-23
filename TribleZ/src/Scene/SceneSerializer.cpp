@@ -1,6 +1,7 @@
 #include "tzpch.h"
 #include "SceneSerializer.h"
 
+//#define YAML_CPP_STATIC_DEFINE
 #include <yaml-cpp/yaml.h>
 #include "Entity.h"
 #include "Component.h"

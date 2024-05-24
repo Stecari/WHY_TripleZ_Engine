@@ -25,7 +25,7 @@ namespace TribleZ
 
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
-		ImGui::Begin("SceneHierarchyPanel");
+		ImGui::Begin("Scene Hierarchy");
 
 		/*
 		* 新版的entt中的registry没有each函数了

@@ -17,8 +17,8 @@ namespace TribleZ
 
 
 	public:			//由于SandBox是Application的子类，所以在构造之前会先构造Application
-		TribleZ_Editor()	//实际应用的初始化，把要用到的层全部推进来准备好
-			:Application("TribleZ_Editor")
+		TribleZ_Editor(ApplicationCommandLineArgs Args)	//实际应用的初始化，把要用到的层全部推进来准备好
+			:Application("TribleZ_Editor", Args)
 		{
 			PushLayer(new Editor_Layer());
 		}
@@ -33,7 +33,7 @@ namespace TribleZ
 
 	Application* CreatApplication(ApplicationCommandLineArgs Args)
 	{
-		return new TribleZ_Editor;
+		return new TribleZ_Editor(Args);
 	}
 
 }

@@ -7,6 +7,7 @@
 
 #include "ParticleSystem.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanels.h"
 
 namespace TribleZ
 {
@@ -48,6 +49,7 @@ namespace TribleZ
 		uint32_t Map_Width, Map_Height;
 		//画面面板
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+		ContentBrowserPanels m_ContentBrowserPanels;
 		//窗口选中和鼠标悬停
 		bool m_ViewPortFocused;
 		bool m_ViewPortHovered;
@@ -71,6 +73,7 @@ namespace TribleZ
 
 		void SaveSceneAs();
 		void OpenScene();
+		void OpenScene(const std::filesystem::path& path);
 		void NewScene();
 	};
 }

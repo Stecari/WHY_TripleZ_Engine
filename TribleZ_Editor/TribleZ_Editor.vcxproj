@@ -139,12 +139,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Editor_Layer.h" />
+    <ClInclude Include="src\Panels\ContentBrowserPanels.h" />
     <ClInclude Include="src\Panels\SceneHierarchyPanel.h" />
     <ClInclude Include="src\ParticleSystem.h" />
     <ClInclude Include="src\Random.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Editor_Layer.cpp" />
+    <ClCompile Include="src\Panels\ContentBrowserPanels.cpp" />
     <ClCompile Include="src\Panels\SceneHierarchyPanel.cpp" />
     <ClCompile Include="src\ParticleSystem.cpp" />
     <ClCompile Include="src\Random.cpp" />

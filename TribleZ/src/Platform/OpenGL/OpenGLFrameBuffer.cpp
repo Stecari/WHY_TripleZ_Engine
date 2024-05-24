@@ -97,7 +97,7 @@ namespace TribleZ
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& Specification)
 		:m_Specification(Specification)
 	{
-		for (auto spec : m_Specification.Attachments.Attachments_list)
+		for (FramebufferTextureSpecification spec : m_Specification.Attachments.Attachments_list)
 		{
 			if (!Utils::IsDepthFormat(spec.TextureFormat))
 				m_ColorAttachmentSpecifications.emplace_back(spec);

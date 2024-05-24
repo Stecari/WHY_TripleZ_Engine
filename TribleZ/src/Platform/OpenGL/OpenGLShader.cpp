@@ -103,6 +103,7 @@ namespace TribleZ
 		:m_FilePath(filepath)
 	{
 		TZ_PROFILE_FUNCTION_SIG();
+		Utils::CreateCacheDirectoryIfNeeded();
 
 		std::string source = ReadFile(filepath);
 		auto shaderSource = PreProcess(source);

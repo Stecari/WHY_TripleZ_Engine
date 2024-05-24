@@ -20,6 +20,8 @@
 
 namespace TribleZ
 {
+	extern const std::filesystem::path g_AssertPath;
+
 	Editor_Layer::Editor_Layer()
 		:Layer("Editor_Layer"), CameraController(1280.0f / 720.0f, true), m_ParticleSystem(5000)
 	{
@@ -54,35 +56,47 @@ namespace TribleZ
 		FrameBuffer_Spec.Attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER ,FramebufferTextureFormat::Depth };
 		FrameBuffer_Spec.Width = 1280;
 		FrameBuffer_Spec.Height = 720;
-		FrameBuffer_2D = FrameBuffer::Create(FrameBuffer_Spec);
+		FrameBuffer_2D = FrameBuffer::Create(FrameBuffer_Spec);//人身第一次独立修好疑难杂症
+													//开Release的时候帧缓冲区不完整，m_Specification的
 
-		//子纹理初始化
-		subTex = SubTexture2D::CreateFromCoords(SpriteSheet_tex, { 10, 10 }, { 16.0, 16.0 }, { 1.0f, 1.0f });
-		m_SubTexMap['D'] = SubTexture2D::CreateFromCoords(SpriteSheet_tex, { 1, 8 }, { 16.0, 16.0 }, { 1.0f, 1.0f });
-		m_SubTexMap['G'] = SubTexture2D::CreateFromCoords(SpriteSheet_tex, { 0, 10 }, { 16.0, 16.0 }, { 1.0f, 1.0f });
-		m_SubTexMap['F'] = SubTexture2D::CreateFromCoords(SpriteSheet_tex, { 2, 10 }, { 16.0, 16.0 }, { 1.0f, 1.0f });
-		m_SubTexMap['R'] = SubTexture2D::CreateFromCoords(SpriteSheet_tex, { 7, 7 }, { 16.0, 16.0 }, { 1.0f, 1.0f });
-		m_SubTexMap['W'] = SubTexture2D::CreateFromCoords(SpriteSheet_tex, { 0, 6 }, { 16.0, 16.0 }, { 1.0f, 1.0f });
-		//m_SubTexMap['H'] = SubTexture2D::CreateFromCoords(SpriteSheet_tex, {  0, 3  }, { 16.0, 16.0 }, { 4.0f, 4.0f });
+		{
+			//子纹理初始化
+			subTex = SubTexture2D::CreateFromCoords(SpriteSheet_tex, { 10, 10 }, { 16.0, 16.0 }, { 1.0f, 1.0f });
+			m_SubTexMap['D'] = SubTexture2D::CreateFromCoords(SpriteSheet_tex, { 1, 8 }, { 16.0, 16.0 }, { 1.0f, 1.0f });
+			m_SubTexMap['G'] = SubTexture2D::CreateFromCoords(SpriteSheet_tex, { 0, 10 }, { 16.0, 16.0 }, { 1.0f, 1.0f });
+			m_SubTexMap['F'] = SubTexture2D::CreateFromCoords(SpriteSheet_tex, { 2, 10 }, { 16.0, 16.0 }, { 1.0f, 1.0f });
+			m_SubTexMap['R'] = SubTexture2D::CreateFromCoords(SpriteSheet_tex, { 7, 7 }, { 16.0, 16.0 }, { 1.0f, 1.0f });
+			m_SubTexMap['W'] = SubTexture2D::CreateFromCoords(SpriteSheet_tex, { 0, 6 }, { 16.0, 16.0 }, { 1.0f, 1.0f });
+			//m_SubTexMap['H'] = SubTexture2D::CreateFromCoords(SpriteSheet_tex, {  0, 3  }, { 16.0, 16.0 }, { 4.0f, 4.0f });
 
-		//地图属性初始化
-		Map_Width = s_MapWidth;
-		Map_Height = strlen(TileMap) / s_MapWidth;
+			//地图属性初始化
+			Map_Width = s_MapWidth;
+			Map_Height = strlen(TileMap) / s_MapWidth;
 
-		//粒子初始化
-		m_Particle.ColorBegin = { 254 / 255.0f, 212 / 255.0f, 123 / 255.0f, 1.0f };
-		m_Particle.ColorEnd = { 254 / 255.0f, 109 / 255.0f,  41 / 255.0f, 1.0f };
-		m_Particle.SizeBegin = 35.0f, m_Particle.SizeVariation = 20.0f, m_Particle.SizeEnd = 0.0f;
-		m_Particle.LifeTime = 1.2f;
-		m_Particle.Velocity = { 0.0f, 0.0f };
-		m_Particle.VelocityVariation = { 400.0f, 200.0f };
-		m_Particle.Position = { 0.0f, 0.0f };
+			//粒子初始化
+			m_Particle.ColorBegin = { 254 / 255.0f, 212 / 255.0f, 123 / 255.0f, 1.0f };
+			m_Particle.ColorEnd = { 254 / 255.0f, 109 / 255.0f,  41 / 255.0f, 1.0f };
+			m_Particle.SizeBegin = 35.0f, m_Particle.SizeVariation = 20.0f, m_Particle.SizeEnd = 0.0f;
+			m_Particle.LifeTime = 1.2f;
+			m_Particle.Velocity = { 0.0f, 0.0f };
+			m_Particle.VelocityVariation = { 400.0f, 200.0f };
+			m_Particle.Position = { 0.0f, 0.0f };
+		}
 
 		//视口初始化
 		CameraController.SetZoomLevel(720.0f * 2);
 
 		//场景初始化
 		ActiveScene = CreatRef<Scene>();
+
+		//命令行 ??
+		auto commondLineArgs = Application::GetInstence().GetCommandLineArgs();
+		if (commondLineArgs.Count > 1)
+		{
+			auto scenefilePath = commondLineArgs[1];
+			SceneSerializer serializer(ActiveScene);
+			serializer.Deserializer(scenefilePath);
+		}
 
 		m_EditorCamera = Editor_Camera(60.0f, 1.788f, 0.01f, 10000.0f);
 		
@@ -163,13 +177,14 @@ namespace TribleZ
 		//设置窗口尺寸—视口尺寸
 		if (TribleZ::FrameBufferSpecification t_spec = FrameBuffer_2D->GetSpecification();	//if语句判断中可以采用一个分号，分号前是我判断前要进行地操作语句
 			m_ViewSize.x > 0.0f && m_ViewSize.y > 0.0f &&	//我Gui视口(窗口)的大小要大于0
-			t_spec.Width != m_ViewSize.x || t_spec.Height != m_ViewSize.y)		//视口大小不等于帧缓冲区大小
+			(t_spec.Width != m_ViewSize.x || t_spec.Height != m_ViewSize.y) )		//视口大小不等于帧缓冲区大小
 		{
 			FrameBuffer_2D->Resize((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);
 			CameraController.ResizeView(m_ViewSize.x, m_ViewSize.y);
 			m_EditorCamera.SetViewportSize(m_ViewSize.x, m_ViewSize.y);
 			ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);
 		}
+		
 
 		//更新相机
 		if (m_ViewPortFocused){		//只有选中该窗口时才能启用相机更新
@@ -215,8 +230,6 @@ namespace TribleZ
 				//TZ_CORE_INFO("Pixcel: {0}", Pixcel);
 			}
 		}
-
-
 		FrameBuffer_2D->UnBind();
 
 #if PARTICLE_SYSTEM_ON
@@ -349,6 +362,7 @@ namespace TribleZ
 
 			//显示分层面板
 			m_SceneHierarchyPanel.OnImGuiRender();
+			m_ContentBrowserPanels.OnImGuiRender();
 
 			//鼠标悬停的实体ID
 			std::string hoverd_name = "NONE";
@@ -423,6 +437,18 @@ namespace TribleZ
 			//m_ViewportBound[0] = { minBound.x, minBound.y };
 			//m_ViewportBound[1] = { maxBound.x, maxBound.y };		
 			/*-------------窗口鼠标信息---------------------------------------------------------------------------------------------------------------*/
+
+			/*-------------文件拖拽---------------------------------------------------------------------------------------------------------------*/
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Content_Browers_panel"))
+				{
+					const wchar_t* path = (const wchar_t*)payload->Data;
+					OpenScene(g_AssertPath / path);
+				}
+				ImGui::EndDragDropTarget();
+			}
+			/*-------------文件拖拽---------------------------------------------------------------------------------------------------------------*/
 
 
 
@@ -602,13 +628,17 @@ namespace TribleZ
 		std::string file_path = FileDialogs::OpenFile("TribleZ Scene (*.tz)\0*.tz\0");	//这个就是自定义文件过滤器的格式 TribleZ Scene (*.tz) \0*.tz\0		比如这里就会将所有(*)以.tz为后缀的文件显示出来
 		if (!file_path.empty())	//路径不为空，说明成功进行了															/*  被两个 \0 夹起来的部分就是真正的过滤器*/
 		{
-			ActiveScene = CreatRef<Scene>();	//创建一个新的场景
-			ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);	//初始化视口大小防止相机缩放比出问题
-			m_SceneHierarchyPanel.SetContext(ActiveScene);	//这里本来里面没有指针刷新，所以会出问题
-
-			SceneSerializer TZ_Serializer(ActiveScene);
-			TZ_Serializer.Deserializer(file_path);
+			OpenScene(file_path);
 		}
+	}
+	void Editor_Layer::OpenScene(const std::filesystem::path& path)
+	{
+		ActiveScene = CreatRef<Scene>();	//创建一个新的场景
+		ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);	//初始化视口大小防止相机缩放比出问题
+		m_SceneHierarchyPanel.SetContext(ActiveScene);	//这里本来里面没有指针刷新，所以会出问题
+
+		SceneSerializer TZ_Serializer(ActiveScene);
+		TZ_Serializer.Deserializer(path.string());
 	}
 	void Editor_Layer::NewScene()
 	{

@@ -15,7 +15,7 @@ namespace TribleZ
 		unsigned int m_Height;
 
 		unsigned int m_Texture_ID;
-			   /*GL内部存储的格式*/		/*我们读取的格式*/
+			   /*GL内部存储的格式*/		   /*我们读取的格式*/
 		GLenum m_Internal_format = GL_RGBA8, m_Data_format = GL_RGBA;
 
 	public:

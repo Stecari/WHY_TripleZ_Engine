@@ -11,6 +11,8 @@
 
 namespace TribleZ
 {
+	
+
 	class Editor_Layer : public Layer
 	{
 	private:
@@ -26,6 +28,9 @@ namespace TribleZ
 
 		Ref<Scene>			ActiveScene;
 		Ref<FrameBuffer>	FrameBuffer_2D;
+
+		Ref<Texture2D>		m_IconPlay;
+		Ref<Texture2D>		m_IconStop;
 
 		OrthoGraphicCameraContraller CameraController;
 		Editor_Camera m_EditorCamera;
@@ -58,6 +63,14 @@ namespace TribleZ
 		//ImGui控件操作模式：平移、旋转、缩放
 		int m_GuizmoOperationType = -1;
 
+		//场景状态：编辑，游玩
+		enum class SceneState
+		{
+			Edit = 1,
+			Play = 2
+		};
+		SceneState m_SceneState = SceneState::Edit;
+
 	public:
 		Editor_Layer();
 
@@ -67,6 +80,8 @@ namespace TribleZ
 		virtual void OnUpdata(TimeStep time_step) override;
 		virtual void OnImGuiRender() override;
 		virtual void OnEvent(Event& event) override;
+
+		void UI_Toolbar();
 	private:
 		bool OnEventKeyPressed(EventKeyPress& event);
 		bool OnEventMouseButtonPressed(EventMouseButtonPressed& event);
@@ -75,5 +90,8 @@ namespace TribleZ
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
 		void NewScene();
+
+		void OnScenePlay();
+		void OnSceneEdit();
 	};
 }

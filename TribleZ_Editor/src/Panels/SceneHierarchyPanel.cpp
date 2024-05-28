@@ -4,8 +4,13 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "Scene/Component.h"
 
+#include <filesystem>
+
 namespace TribleZ
 {
+	extern const std::filesystem::path g_AssertPath;
+
+
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
 	{
 		SetContext(context);
@@ -367,8 +372,27 @@ namespace TribleZ
 		BuildPerComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component)
 		{
 			auto& renderer_color = component.Color;
-			if (ImGui::ColorEdit4("Sprite Renderer", glm::value_ptr(renderer_color) ) )
-			{}
+			//sprite.Texture = Texture2D::Create("asserts/img/game/texture/tilemap_sheet.png");
+			auto& texture = component.Texture;
+			ImGui::ColorEdit4("Sprite Renderer", glm::value_ptr(renderer_color));
+			ImGui::Button("Texture", ImVec2(100.0, 0.0));
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* paylode = ImGui::AcceptDragDropPayload("Content_Browers_panel"))
+				{
+					const wchar_t* path = (const wchar_t*)paylode->Data;
+					std::filesystem::path texturePath = g_AssertPath / path;
+					component.Texture = Texture2D::Create(texturePath.string());
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			if (component.Texture){
+				float width = texture->GetWidth();
+				float height = texture->GetHeight();
+				ImGui::Image((ImTextureID)texture->GetID(), { width, height }, { 0,1 }, { 1,0 });
+			}
 		});
 		
 	}

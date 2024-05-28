@@ -8,11 +8,16 @@
 #include "TribleZ_Core/Render/SceneCamera.h"
 #include "Scene/ScriptableEntity.h"
 
+#include "TribleZ_Core/Render/Texture.h"
+
 namespace TribleZ
 {
 	struct SpriteRendererComponent
 	{
 		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
+		Ref<Texture2D> Texture = nullptr;
+		float Tilingfactor = 1.0;
+
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
 		SpriteRendererComponent(const glm::vec4& color)
@@ -21,6 +26,8 @@ namespace TribleZ
 		operator const glm::vec4& () const { return Color; }
 		operator glm::vec4& () { return Color; }
 	};
+
+
 	struct TransformComponent
 	{
 		glm::vec3 Translation = { 0.0f, 0.0f, 0.0f };
@@ -41,11 +48,9 @@ namespace TribleZ
 #endif
 			//实验性代码，利用欧拉角和四元数转换，不一定会快，可能只是看上去会干净一点
 			glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
-
 			glm::mat4 transform = glm::translate(glm::mat4(1.0), Translation)
 								* rotation
 								* glm::scale(glm::mat4(1.0f), Scale);
-
 			return transform;
 		}
 

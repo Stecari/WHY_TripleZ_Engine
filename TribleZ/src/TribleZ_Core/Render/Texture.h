@@ -27,4 +27,14 @@ namespace TribleZ
 		static Ref<Texture2D> Create(unsigned int Width, unsigned int Height);
 		static Ref<Texture2D> Create(const std::string& FilePath);
 	};
+
+	/*准备着，后面应该需要*/
+	class Texture3D : public Texture
+	{
+	public:
+		virtual ~Texture3D() = default;
+
+		static Ref<Texture3D> Create(unsigned int Width, unsigned int Height);
+		static Ref<Texture3D> Create(const std::string& FilePath);
+	};
 }

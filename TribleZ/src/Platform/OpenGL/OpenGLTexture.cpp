@@ -74,10 +74,10 @@ namespace TribleZ
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_Texture_ID);	//绑定一个纹理数据到一个纹理插槽上
 		glTextureStorage2D(m_Texture_ID, 1, internal_format, m_Width, m_Height);	//缓存我们的纹理数据,GL_RGBA8决定我们以什么格式存储到OpenGL中，所以需要我们告诉，填channels就行其实
 							/*这个level = 1是跟mipmap有关的参数*/
-		//glTextureParameteri(m_Texture_ID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTextureParameteri(m_Texture_ID, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //缩小采用的采样方式
-		//glTextureParameteri(m_Texture_ID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(m_Texture_ID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);//放大采用的采样方式
+		glTextureParameteri(m_Texture_ID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		//glTextureParameteri(m_Texture_ID, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //缩小采用的采样方式
+		glTextureParameteri(m_Texture_ID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		//glTextureParameteri(m_Texture_ID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);//放大采用的采样方式
 		glTextureParameteri(m_Texture_ID, GL_TEXTURE_WRAP_S, GL_REPEAT);//存在空余空间时采用的环绕方式(repeat为默认)
 		glTextureParameteri(m_Texture_ID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		//glTextureParameteri(m_Texture_ID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

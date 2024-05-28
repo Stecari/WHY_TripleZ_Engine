@@ -52,6 +52,9 @@ namespace TribleZ
 		Texture_2D = Texture2D::Create("asserts/img/LOGO/LOGO4.png");
 		SpriteSheet_tex = Texture2D::Create("asserts/img/game/texture/tilemap_sheet.png");
 
+		m_IconPlay = Texture2D::Create("Resources/Icons/Player/PalyBottom.png");
+		m_IconStop = Texture2D::Create("Resources/Icons/Player/StopBottom.png");
+
 		FrameBufferSpecification FrameBuffer_Spec;
 		FrameBuffer_Spec.Attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER ,FramebufferTextureFormat::Depth };
 		FrameBuffer_Spec.Width = 1280;
@@ -186,11 +189,11 @@ namespace TribleZ
 		}
 		
 
-		//更新相机
-		if (m_ViewPortFocused){		//只有选中该窗口时才能启用相机更新
-			CameraController.OnUpdata(time_step);
-			m_EditorCamera.OnUpdata(time_step);
-		}
+		////更新相机
+		//if (m_ViewPortFocused){		//只有选中该窗口时才能启用相机更新
+		//	CameraController.OnUpdata(time_step);
+		//}
+		//m_EditorCamera.OnUpdata(time_step);
 
 		//更行统计数据
 		Renderer2D::ResetStats();
@@ -205,9 +208,29 @@ namespace TribleZ
 		RendererCommand::SetClearColor({ 0.3f, 0.3f, 0.3f, 1.0f });
 		RendererCommand::Clear();
 		FrameBuffer_2D->ClearAttachment(1, -1);
+
+
 		//更新场景
-		//ActiveScene->OnUpdataRuntime(time_step);
-		ActiveScene->OnUpdataEditor(time_step, m_EditorCamera);
+		switch (m_SceneState)
+		{
+			case SceneState::Edit: 
+			{
+				//更新相机
+				if (m_ViewPortFocused) {		//只有选中该窗口时才能启用相机更新
+					CameraController.OnUpdata(time_step);
+				}
+				m_EditorCamera.OnUpdata(time_step);
+
+				ActiveScene->OnUpdataEditor(time_step, m_EditorCamera);
+				break;
+			}
+			case SceneState::Play:
+			{
+				ActiveScene->OnUpdataRuntime(time_step);
+				break;
+			}
+		}
+
 
 		//					/*全局坐标，左上角是0，0，一整块电脑屏幕作为载体*/
 		auto [mx, my] = ImGui::GetMousePos();
@@ -463,9 +486,7 @@ namespace TribleZ
 				//float windowHeight = ImGui::GetWindowHeight();
 				//ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);		//SetRectangle Rectangle:矩形
 				/*后期把范围缩小了*/
-				ImGuizmo::SetRect(m_ViewportBound[0].x, m_ViewportBound[0].y, m_ViewportBound[1].x - m_ViewportBound[0].x, m_ViewportBound[1].y - m_ViewportBound[0].y);
-
-				
+				ImGuizmo::SetRect(m_ViewportBound[0].x, m_ViewportBound[0].y, m_ViewportBound[1].x - m_ViewportBound[0].x, m_ViewportBound[1].y - m_ViewportBound[0].y);	
 
 				//获取主相机参数
 #ifdef RUNTIME
@@ -477,8 +498,6 @@ namespace TribleZ
 				const glm::mat4& CameraProjection = m_EditorCamera.GetProjection();
 				glm::mat4 CameraView = m_EditorCamera.GetViewMatrix();
 #endif
-
-
 				//获取实体信息
 				auto& SelectedEntity_TC = selectedEntity.GetComponent<TransformComponent>();
 				glm::mat4 SelectEntitytransform = SelectedEntity_TC.GetTransform();
@@ -532,15 +551,55 @@ namespace TribleZ
 					
 				}
 			}
-			
-
-
-
 			ImGui::End();
 
 			ImGui::PopStyleVar();
+
 		}
+		UI_Toolbar();
+
 		ImGui::End();
+	}
+
+	void Editor_Layer::UI_Toolbar()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		auto& colors = ImGui::GetStyle().Colors;
+		const auto& BottomHovCol = colors[ImGuiCol_ButtonHovered];
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(BottomHovCol.x, BottomHovCol.y, BottomHovCol.z, 0.7f));
+		const auto& BottomActCol = colors[ImGuiCol_ButtonActive];
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(BottomActCol.x, BottomActCol.y, BottomActCol.z, 0.7f));
+
+
+		ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+		float size = ImGui::GetWindowHeight() - 6.0f;
+		//ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.5 - size * 0.5);
+		ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x * 0.5 - size * 0.5);
+		Ref<Texture2D> Icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
+		if (ImGui::ImageButton((ImTextureID)Icon->GetID(), ImVec2( size, size )))
+		{
+			if (m_SceneState == SceneState::Edit){
+				OnScenePlay();
+			}
+			else if (m_SceneState == SceneState::Play){
+				OnSceneEdit();
+			}
+		}
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(3);
+		ImGui::End();
+	}
+
+	void Editor_Layer::OnScenePlay()
+	{
+		m_SceneState = SceneState::Play;
+	}
+
+	void Editor_Layer::OnSceneEdit()
+	{
+		m_SceneState = SceneState::Edit;
 	}
 
 	void Editor_Layer::OnEvent(Event& event)

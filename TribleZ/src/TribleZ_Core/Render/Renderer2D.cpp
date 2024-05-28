@@ -137,7 +137,8 @@ namespace TribleZ
 
 		/*-------------------读取着色器源码-----------------------------------------------------------*/
 		//m_DataBase.Texture_Shader = Shader::Create("asserts/shader/Editor_TextureShader.glsl");
-		m_DataBase.Texture_Shader = Shader::Create("asserts/shader/Editor_TextureShader_official.glsl");
+		//m_DataBase.Texture_Shader = Shader::Create("asserts/shader/Editor_TextureShader_official.glsl");
+		m_DataBase.Texture_Shader = Shader::Create("asserts/shader/cherno.glsl");
 		/*-------------------读取着色器源码-----------------------------------------------------------*/
 		//m_DataBase.Texture_Shader->Bind();
 		//m_DataBase.Texture_Shader->SetIntArray("u_Texture", texture, 32);//将texture[32]数组传给uniform u_Texture
@@ -571,7 +572,12 @@ namespace TribleZ
 
 	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& SpriteRenderComponent, int entityID)
 	{
-		DrawQuad(transform, SpriteRenderComponent.Color, entityID);
+		if (SpriteRenderComponent.Texture){
+			DrawQuad(transform, SpriteRenderComponent.Texture, SpriteRenderComponent.Tilingfactor, SpriteRenderComponent.Color, entityID);
+		}
+		else{
+			DrawQuad(transform, SpriteRenderComponent.Color, entityID);
+		}
 	}
 
 

@@ -209,7 +209,6 @@ namespace TribleZ
 		RendererCommand::Clear();
 		FrameBuffer_2D->ClearAttachment(1, -1);
 
-
 		//更新场景
 		switch (m_SceneState)
 		{
@@ -595,11 +594,14 @@ namespace TribleZ
 	void Editor_Layer::OnScenePlay()
 	{
 		m_SceneState = SceneState::Play;
+		ActiveScene->OnRuntimeStart();
 	}
 
 	void Editor_Layer::OnSceneEdit()
 	{
 		m_SceneState = SceneState::Edit;
+		ActiveScene->OnRuntimeStop();
+
 	}
 
 	void Editor_Layer::OnEvent(Event& event)
@@ -692,12 +694,20 @@ namespace TribleZ
 	}
 	void Editor_Layer::OpenScene(const std::filesystem::path& path)
 	{
-		ActiveScene = CreatRef<Scene>();	//创建一个新的场景
-		ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);	//初始化视口大小防止相机缩放比出问题
-		m_SceneHierarchyPanel.SetContext(ActiveScene);	//这里本来里面没有指针刷新，所以会出问题
+		if (path.extension().string() != ".tz")
+		{
+			TZ_CORE_WARN("Could not load {0} - not a scene file", path.filename().string());
+			return;
+		}
 
-		SceneSerializer TZ_Serializer(ActiveScene);
-		TZ_Serializer.Deserializer(path.string());
+		Ref<Scene> NewScene = CreatRef<Scene>();	//创建一个新的场景
+		SceneSerializer TZ_Serializer(NewScene);
+		if (TZ_Serializer.Deserializer(path.string()))
+		{
+			ActiveScene = NewScene;
+			ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);	//初始化视口大小防止相机缩放比出问题
+			m_SceneHierarchyPanel.SetContext(ActiveScene);	//这里本来里面没有指针刷新，所以会出问题
+		}
 	}
 	void Editor_Layer::NewScene()
 	{

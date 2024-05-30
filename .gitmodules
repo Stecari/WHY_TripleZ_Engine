@@ -16,3 +16,6 @@
 [submodule "TribleZ/Gitvender/ImGuizmo"]
 	path = TribleZ/Gitvender/ImGuizmo
 	url = https://github.com/TheCherno/ImGuizmo
+[submodule "TribleZ/Gitvender/Box2D"]
+	path = TribleZ/Gitvender/Box2D
+	url = https://github.com/Stecari/box2d

@@ -27,7 +27,6 @@ namespace TribleZ
 		operator glm::vec4& () { return Color; }
 	};
 
-
 	struct TransformComponent
 	{
 		glm::vec3 Translation = { 0.0f, 0.0f, 0.0f };
@@ -56,6 +55,7 @@ namespace TribleZ
 
 
 	};
+
 	struct TagComponent
 	{
 		std::string Tag;
@@ -129,5 +129,37 @@ namespace TribleZ
 			*/
 		}
 		
+	};
+
+	//刚体
+	struct RigidBody2DComponent
+	{						 /*静态*/	  /*动态*/ /*运动学*/
+		enum class BodyType { Static = 0, Dynamic, Kinematic };
+		BodyType m_BodyType = BodyType::Static;
+
+		bool FixRotation = false;
+
+		void* RuntimeBody = nullptr;	//向前存储Box2Dbody的数据
+
+		RigidBody2DComponent() = default;
+		RigidBody2DComponent(const RigidBody2DComponent&) = default;
+	};
+
+	//碰撞箱与其物理属性
+	struct BoxCollider2DComponent
+	{
+		glm::vec2 Offset = { 0.0f, 0.0f };	//中心点位置
+		glm::vec2 Size = { 0.5f, 0.5f };	//相对于中心点的大小，真实尺寸因该为1 * 1
+
+		//以后可能会移动到像是“物理材质”这种东西里面
+		float Density = 1.0;				//密度
+		float friction = 0.5;				//摩擦
+		float Restitution = 0.0;			//碰撞的能量反馈系数，1 - 能量损失系数
+		float RestitutionThreshold = 0.5;	//能量反馈系数的最大值
+
+		void* RuntimeFixture = nullptr;	//向前存储Box2DFixture夹具的数据
+
+		BoxCollider2DComponent() = default;
+		BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
 	};
 }

@@ -11,6 +11,8 @@ namespace TribleZ
 
 		virtual bool operator==(const Texture& other) const = 0;
 
+		virtual bool IsLoaded() const = 0;
+
 		virtual uint32_t  GetWidth() const = 0;
 		virtual uint32_t  GetHeight() const = 0;
 		virtual uint32_t  GetID() const = 0;

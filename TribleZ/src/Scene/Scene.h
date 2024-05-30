@@ -5,6 +5,8 @@
 #include "TribleZ_Core/TimeStep.h"
 #include "TribleZ_Core/Render/Editor_Camera.h"
 
+class b2World;	//不能声明在namespace TribleZ里面，不然就变成了TribleZ::b2World()了，就不是Box2D的东西了
+
 namespace TribleZ
 {
 	class Entity;
@@ -18,6 +20,8 @@ namespace TribleZ
 
 		uint32_t m_ViewWidth, m_ViewHeight;
 
+		b2World* m_PhysicsWorld = nullptr;		//这里创建一个b2World对象会被视为不完整的实例，但是创建一个b2World指针就可以
+
 	public:
 		Scene();
 		~Scene();
@@ -26,11 +30,13 @@ namespace TribleZ
 		* 差别就是编辑时需要将相机作为一个可以被渲染实体，这样子就可以在编辑器中拖动相机，让他处于我们想要的位置，
 		* 然后再点击"游玩"或者"试玩"进入运行时，视角进入指定相机，不再渲染所有相机的虚拟实体*/
 		void OnUpdataEditor(TimeStep tiemstep, Editor_Camera Edi_Camera);
-		void OnUpdataRuntime(TimeStep tiemstep);	//OnUpdataRuntime
+		void OnUpdataRuntime(TimeStep tiemstep);
 		void ResizeView(uint32_t width, uint32_t height);
 
+		void OnRuntimeStop();
+		void OnRuntimeStart();
+
 		Entity CreateEntity(const std::string& name = std::string());	//每个实体包含一个entt::entity,和Scene*
-		//void DeleteEntity(const Entity& entity);		//我喜欢这样
 		void DeleteEntity(Entity entity);
 
 		//z这里我发现我一直有有些盲区，就是我特别喜欢加&，这个根本不用加&，而且加不了的啊

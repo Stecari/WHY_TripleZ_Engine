@@ -18,6 +18,7 @@ namespace TribleZ
 			   /*GL内部存储的格式*/		   /*我们读取的格式*/
 		GLenum m_Internal_format = GL_RGBA8, m_Data_format = GL_RGBA;
 
+		bool m_IsLoaded = false;
 	public:
 		OpenGLTexture2D(unsigned int Width, unsigned int Height);
 		OpenGLTexture2D(const std::string& path);
@@ -28,6 +29,8 @@ namespace TribleZ
 		virtual uint32_t  GetHeight() const override { return m_Height; }
 		virtual uint32_t  GetID() const override { return m_Texture_ID; }
 		virtual void SetData(void* data, unsigned int data_size) override;
+
+		virtual bool IsLoaded() const override { return m_IsLoaded; }
 
 		virtual bool operator==(const Texture& other) const override
 		{

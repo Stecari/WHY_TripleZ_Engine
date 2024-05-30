@@ -27,6 +27,7 @@ group "Dependencies"
 	include "vender/Glad"
 	include "TribleZ/Gitvender/ImGui"
 	include "TribleZ/Gitvender/yaml_cpp"
+	include "TribleZ/Gitvender/Box2D"
 	--include "D:/Vulkan/VulkanSDK1.3.280.0"
 group ""
 
@@ -79,6 +80,7 @@ project "TribleZ"
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.VulkanSDK}"
 	}
 
@@ -87,6 +89,7 @@ project "TribleZ"
 		"GLFW",
 		"Glad",
 		"ImGui",
+		"Box2D",
 		"yaml-cpp",
 		"opengl32.lib",
 

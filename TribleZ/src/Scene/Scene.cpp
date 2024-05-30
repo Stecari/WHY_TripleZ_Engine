@@ -8,11 +8,25 @@
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective(透视，投影关系、比例)
 
+#include "box2d/b2_world.h"
+#include "box2d/b2_body.h"
+#include "box2d/b2_fixture.h"
+#include "box2d/b2_polygon_shape.h"
 
 namespace TribleZ
 {
-	static void TransformFunc(entt::registry& registry, entt::entity entity){}
-	static void DoMath(glm::mat4 transform){}
+	static b2BodyType RigidBodyTypeToBox2DType(RigidBody2DComponent::BodyType RBType)
+	{
+		switch (RBType)
+		{
+			case RigidBody2DComponent::BodyType::Static:	return b2BodyType::b2_staticBody;	
+			case RigidBody2DComponent::BodyType::Dynamic:	return b2BodyType::b2_dynamicBody;
+			case RigidBody2DComponent::BodyType::Kinematic:	return b2BodyType::b2_kinematicBody;
+		}
+
+		TZ_CORE_ASSERT("UNKOWN BODY TYPE!");
+		return b2BodyType::b2_staticBody;
+	}
 
 	Scene::Scene()
 	{
@@ -86,6 +100,29 @@ namespace TribleZ
 			});
 		}
 
+		/*---------------------物理引擎-------------------------------------------------------------*/
+		const int32_t velocityIterations = 6;	//有点难形容，可能理解为速度？调小了更容易穿过物体
+		const int32_t positionIterations = 2;	//这个大概是粒子散度之类的
+
+		m_PhysicsWorld->Step(timestep, velocityIterations, positionIterations);	//步进，可以理解为计算一次
+
+		auto view = m_Registry.view<RigidBody2DComponent>();
+		for (auto& ent : view)
+		{
+			Entity entity = { ent, this };
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+
+			b2Body* body = (b2Body*)rb2d.RuntimeBody;
+
+			const auto& position = body->GetPosition();
+			transform.Rotation.z = body->GetAngle();
+			transform.Translation.x = position.x;
+			transform.Translation.y = position.y;
+		}
+		/*---------------------物理引擎-------------------------------------------------------------*/
+
+
 
 		BaseCamera* main_camera = nullptr;
 		TransformComponent* camera_trans = nullptr;
@@ -111,7 +148,6 @@ namespace TribleZ
 			}
 		}
 		
-		//假如找到了主相机（不为空）
 		if (main_camera)
 		{
 			//开始场景BeginScene
@@ -147,6 +183,59 @@ namespace TribleZ
 		}
 	}
 
+	void Scene::OnRuntimeStart()
+	{
+		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
+
+		b2BodyDef bodydef;
+
+		auto view = m_Registry.view<RigidBody2DComponent>();
+		for (auto& ent : view)
+		{
+			Entity entity (ent, this);
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();	
+			
+			bodydef.type = RigidBodyTypeToBox2DType(rb2d.m_BodyType);
+			//bodydef.fixedRotation = rb2d.FixRotation;
+			bodydef.position.Set(transform.Translation.x, transform.Translation.y);
+			bodydef.angle = transform.Rotation.z;
+
+			b2Body* body = m_PhysicsWorld->CreateBody(&bodydef);
+			body->SetFixedRotation(rb2d.FixRotation);
+			rb2d.RuntimeBody = body;
+
+			if (entity.HasComponent<BoxCollider2DComponent>())
+			{
+				auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+
+				b2PolygonShape boxShape;
+
+				const auto& size = bc2d.Size;
+				boxShape.SetAsBox(size.x * transform.Scale.x, size.y * transform.Scale.y);
+
+				/*---------夹具，用来将各种物理属性绑定到一个body上-------------------------*/
+				b2FixtureDef fixturedef;
+				fixturedef.shape = &boxShape;
+				fixturedef.density = bc2d.Density;
+				fixturedef.friction = bc2d.friction;
+				fixturedef.restitution = bc2d.Restitution;
+				fixturedef.restitutionThreshold = bc2d.RestitutionThreshold;
+				b2Fixture* fixture = body->CreateFixture(&fixturedef);
+				/*---------夹具，用来将各种物理属性绑定到一个body上-------------------------*/
+
+				bc2d.RuntimeFixture = fixture;
+			}
+		}
+	}
+
+	void Scene::OnRuntimeStop()
+	{
+		delete m_PhysicsWorld;
+		m_PhysicsWorld = nullptr;
+	}
+
+
 	Entity Scene::CreateEntity(const std::string& name)
 	{
 		//每个实体包含一个entt::entity,和Scene*
@@ -167,8 +256,20 @@ namespace TribleZ
 		m_Registry.destroy(entity);		//自己写的隐式转换
 	}
 
+
+
+
+
+
+
+
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////添加组件时的回调函数，所有组件都必须有，不然无法编译//////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////特殊手段，将模板文件放在了cpp文件，为不同的对象专门安排了对应的函数///////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	/*好像有问题......*/
-	/*-------特殊手段，将模板文件放在了cpp文件，为不同的对象专门安排了对应的函数-------------------------*/
 	template<typename T>
 	void Scene::OnComponentAdding(Entity entity, T& component)
 	{
@@ -176,12 +277,10 @@ namespace TribleZ
 	}
 	/*------相当于是上面那个模板函数的扩展形式-----------------------------------------------------------*/
 	template<>
-	void Scene::OnComponentAdding<TagComponent>(Entity entity, TagComponent& component)
-	{}
+	void Scene::OnComponentAdding<TagComponent>(Entity entity, TagComponent& component)	{}
 
 	template<>
-	void Scene::OnComponentAdding<TransformComponent>(Entity entity, TransformComponent& component)
-	{}
+	void Scene::OnComponentAdding<TransformComponent>(Entity entity, TransformComponent& component)	{}
 
 	template<>
 	void Scene::OnComponentAdding<CameraComponent>(Entity entity, CameraComponent& component)
@@ -193,13 +292,20 @@ namespace TribleZ
 	}
 
 	template<>
-	void Scene::OnComponentAdding<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
-	{}
+	void Scene::OnComponentAdding<NativeScriptComponent>(Entity entity, NativeScriptComponent& component) {}
 
 	template<>
-	void Scene::OnComponentAdding<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
-	{}
+	void Scene::OnComponentAdding<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component) {}
+
+	template<>
+	void Scene::OnComponentAdding<RigidBody2DComponent>(Entity entity, RigidBody2DComponent& component){}
+
+	template<>
+	void Scene::OnComponentAdding<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component){}
 	/*----------------------------------------------------------------------------------------------------*/
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+
 
 	//辅助功能
 	Entity Scene::GetPrimaryCameraEntity()

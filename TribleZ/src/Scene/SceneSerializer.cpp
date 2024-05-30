@@ -16,7 +16,16 @@
 */
 namespace TribleZ
 {
-	/*适配glm的运算符号*/
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	/*---------------适配glm的运算符号----------------------------------------------------*/
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& value)
+	{
+		out << YAML::Flow;		//excmple:Translation: [0, 0]
+		out << YAML::BeginSeq << value.x << value.y << YAML::EndSeq;
+		return out;
+	}
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& value)
 	{
 		out << YAML::Flow;		//excmple:Translation: [0, 0, 0]
@@ -29,6 +38,36 @@ namespace TribleZ
 		out << YAML::BeginSeq << value.x << value.y << value.z << value.w << YAML::EndSeq;
 		return out;
 	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////----适配glm的运算符号----//////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////---工具函数----/////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	static std::string RigidBody2DBodyTypeToString(RigidBody2DComponent::BodyType bodyType)
+	{
+		switch (bodyType)
+		{
+		case RigidBody2DComponent::BodyType::Static:    return "Static";
+		case RigidBody2DComponent::BodyType::Dynamic:   return "Dynamic";
+		case RigidBody2DComponent::BodyType::Kinematic: return "Kinematic";
+		}
+
+		TZ_CORE_ASSERT(false, "Unknown body type");
+		return {};
+	}
+	static RigidBody2DComponent::BodyType RigidBody2DBodyTypeFromString(const std::string& bodyTypeString)
+	{
+		if (bodyTypeString == "Static")    return RigidBody2DComponent::BodyType::Static;
+		if (bodyTypeString == "Dynamic")   return RigidBody2DComponent::BodyType::Dynamic;
+		if (bodyTypeString == "Kinematic") return RigidBody2DComponent::BodyType::Kinematic;
+
+		TZ_CORE_ASSERT(false, "Unknown body type");
+		return RigidBody2DComponent::BodyType::Static;
+	}
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
 		:m_Scene(scene)		{}
@@ -97,6 +136,32 @@ namespace TribleZ
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<RigidBody2DComponent>())
+		{
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			out << YAML::Key << "RigidBody2DComponent";
+			out << YAML::BeginMap;
+			out << YAML::Key << "BodyType" << YAML::Value << RigidBody2DBodyTypeToString(rb2d.m_BodyType);
+			out << YAML::Key << "FixRotation" << YAML::Value << rb2d.FixRotation;
+			out << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<BoxCollider2DComponent>())
+		{
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			out << YAML::Key << "BoxCollider2DComponent";
+			out << YAML::BeginMap;
+
+			out << YAML::Key << "Offset" << YAML::Value << bc2d.Offset;
+			out << YAML::Key << "Size" << YAML::Value << bc2d.Size;
+			out << YAML::Key << "Density" << YAML::Value << bc2d.Density;
+			out << YAML::Key << "friction" << YAML::Value << bc2d.friction;
+			out << YAML::Key << "Restitution" << YAML::Value << bc2d.Restitution;
+			out << YAML::Key << "RestitutionThreshold" << YAML::Value << bc2d.RestitutionThreshold;
+			
+			out << YAML::EndMap;
+		}
+
 		out << YAML::EndMap;	//结束对Entity键值对的映射
 	}
 
@@ -106,7 +171,7 @@ namespace TribleZ
 		yaml_out << YAML::BeginMap;	/*---------------------------------------------------------------------开始映射------*/
 		yaml_out << YAML::Key << "Scene" << YAML::Value << "Scene's name";		//记录一个键值对
 									//一个序列sequence， 本质上就是一个数组
-		yaml_out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;/*------------------------------开始序列------*/
+		yaml_out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;/*--------------------------------开始序列------*/
 		//等价操作
 		//yaml_out << YAML::Key << "Scene";
 		//yaml_out << YAML::Value << "Scene's name";
@@ -121,7 +186,7 @@ namespace TribleZ
 			}
 			SerializeEntity(yaml_out, entity);
 		});
-		yaml_out << YAML::EndSeq;/*-------------------------------------------------------------------------结束序列------*/
+		yaml_out << YAML::EndSeq;/*-----------------------------------------------------------------------------结束序列------*/
 		yaml_out << YAML::EndMap;/*-------------------------------------------------------------------------结束映射------*/
 
 		std::ofstream fileout(filepath);
@@ -208,6 +273,25 @@ namespace TribleZ
 					SpriteComp.Color = spriteRendererComponent["Color"].as<glm::vec4>();
 				}
 
+				auto RB2DComponent = entity["RigidBody2DComponent"];
+				if (RB2DComponent)
+				{
+					RigidBody2DComponent& rb2d = deserializeEntity.AddComponent<RigidBody2DComponent>();
+					rb2d.m_BodyType = RigidBody2DBodyTypeFromString(RB2DComponent["BodyType"].as<std::string>());
+					rb2d.FixRotation = RB2DComponent["FixRotation"].as<bool>();
+				}
+
+				auto BC2DComponent = entity["BoxCollider2DComponent"];
+				if (BC2DComponent)
+				{
+					BoxCollider2DComponent& bc2d = deserializeEntity.AddComponent<BoxCollider2DComponent>();
+					bc2d.Offset = BC2DComponent["Offset"].as<glm::vec2>();
+					bc2d.Size = BC2DComponent["Size"].as<glm::vec2>();
+					bc2d.Density = BC2DComponent["Density"].as<float>();
+					bc2d.friction = BC2DComponent["friction"].as<float>();
+					bc2d.Restitution = BC2DComponent["Restitution"].as<float>();
+					bc2d.RestitutionThreshold = BC2DComponent["RestitutionThreshold"].as<float>();
+				}
 			}
 		}
 		return true;

@@ -6,6 +6,8 @@
 
 #include <filesystem>
 
+
+
 namespace TribleZ
 {
 	extern const std::filesystem::path g_AssertPath;
@@ -48,8 +50,9 @@ namespace TribleZ
 		if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))	//创建一个点击window后弹出的窗口，flag指定了点击哪个键
 		{
 			if (ImGui::MenuItem("Create New Entity")){
-				m_Context->CreateEntity("Empty Entity").GetComponent<TransformComponent>().Scale = glm::vec3{ 200.0f };	//由于我的左右边框设置的是720和1280，所以不设置尺寸就看不到，但是假如我想要加入相机，那尺寸就要变回1.0(不然就变成这个相机所有东西放大200倍了)
-				//m_Context->CreateEntity("Empty Entity");
+				//m_Context->CreateEntity("Empty Entity").GetComponent<TransformComponent>().Scale = glm::vec3{ 200.0f };	//由于我的左右边框设置的是720和1280，所以不设置尺寸就看不到，但是假如我想要加入相机，那尺寸就要变回1.0(不然就变成这个相机所有东西放大200倍了)
+				//m_Context->CreateEntity("Empty Entity").GetComponent<TransformComponent>().Scale = glm::vec3{ 10.0f };	//由于我的左右边框设置的是720和1280，所以不设置尺寸就看不到，但是假如我想要加入相机，那尺寸就要变回1.0(不然就变成这个相机所有东西放大200倍了)
+				m_Context->CreateEntity("Empty Entity");
 			}
 			ImGui::EndPopup();
 		}
@@ -272,19 +275,40 @@ namespace TribleZ
 		}
 		if (ImGui::BeginPopup("Add Component"))
 		{
-			if (ImGui::MenuItem("Sprite Renderer"))
-			{
-				m_SelectionContext.AddComponent<SpriteRendererComponent>();
-				ImGui::CloseCurrentPopup();
+			if (!m_SelectionContext.HasComponent<SpriteRendererComponent>()){
+				if (ImGui::MenuItem("Sprite Renderer"))
+				{
+					m_SelectionContext.AddComponent<SpriteRendererComponent>();
+					ImGui::CloseCurrentPopup();
+				}
 			}
 
-			if (ImGui::MenuItem("Camera"))
-			{
-				m_SelectionContext.AddComponent<CameraComponent>();
-				/*下面这个我想放到OnComponentAdding()里面*/
-				m_SelectionContext.GetComponent<TransformComponent>().Scale = glm::vec3{ 1.0f };	//假如式相机的话，实体大小要变回1，不然会变成缩放，所有的实体都会被放大显示尺寸倍数
-				ImGui::CloseCurrentPopup();
+			if (!m_SelectionContext.HasComponent<CameraComponent>()){
+				if (ImGui::MenuItem("Camera"))
+				{
+					m_SelectionContext.AddComponent<CameraComponent>();
+					/*下面这个我想放到OnComponentAdding()里面*/
+					m_SelectionContext.GetComponent<TransformComponent>().Scale = glm::vec3{ 1.0f };	//假如式相机的话，实体大小要变回1，不然会变成缩放，所有的实体都会被放大显示尺寸倍数
+					ImGui::CloseCurrentPopup();
+				}
 			}
+
+			if (!m_SelectionContext.HasComponent<RigidBody2DComponent>()){
+				if (ImGui::MenuItem("RigidBody"))
+				{
+					m_SelectionContext.AddComponent<RigidBody2DComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (!m_SelectionContext.HasComponent<BoxCollider2DComponent>()){
+				if (ImGui::MenuItem("Collision Box"))
+				{
+					m_SelectionContext.AddComponent<BoxCollider2DComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
 			ImGui::EndPopup();
 		}
 		ImGui::PopItemWidth();
@@ -299,7 +323,7 @@ namespace TribleZ
 			auto& scale = component.Scale;
 			DrawVec3Controler("Position", translation);
 			DrawVec3Controler("Rotate", rotation_deg);
-			DrawVec3Controler("Scale", scale, 200.0f);
+			DrawVec3Controler("Scale", scale, 1.0);
 			rotation = glm::radians(rotation_deg);
 		});
 
@@ -371,10 +395,9 @@ namespace TribleZ
 
 		BuildPerComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component)
 		{
-			auto& renderer_color = component.Color;
-			//sprite.Texture = Texture2D::Create("asserts/img/game/texture/tilemap_sheet.png");
 			auto& texture = component.Texture;
-			ImGui::ColorEdit4("Sprite Renderer", glm::value_ptr(renderer_color));
+
+			ImGui::ColorEdit4("Sprite Renderer", glm::value_ptr(component.Color));
 			ImGui::Button("Texture", ImVec2(100.0, 0.0));
 
 			if (ImGui::BeginDragDropTarget())
@@ -383,17 +406,64 @@ namespace TribleZ
 				{
 					const wchar_t* path = (const wchar_t*)paylode->Data;
 					std::filesystem::path texturePath = g_AssertPath / path;
-					component.Texture = Texture2D::Create(texturePath.string());
+					Ref<Texture2D> Texture = Texture2D::Create(texturePath.string());
+					if (Texture->IsLoaded()){
+						component.Texture = Texture2D::Create(texturePath.string());
+					}
+					else{
+						TZ_CLIENT_WARN("Could not load texture {0}", texturePath.filename().string());
+					}
 				}
 				ImGui::EndDragDropTarget();
 			}
 
-			if (component.Texture){
-				float width = texture->GetWidth();
-				float height = texture->GetHeight();
+			if (component.Texture){					/*还没考虑尺寸过大的长方形纹理*/
+				float width = texture->GetWidth() > 128.0f ? 128.0f : texture->GetWidth();
+				float height = texture->GetHeight() > 128.0f ? 128.0f : texture->GetHeight();
 				ImGui::Image((ImTextureID)texture->GetID(), { width, height }, { 0,1 }, { 1,0 });
 			}
+
+			ImGui::DragFloat("Tiling Factor", &component.Tilingfactor, 0.1f, 0.1f, 100.0f);
 		});
 		
+		BuildPerComponent<RigidBody2DComponent>("2D RigidBody", entity, [](RigidBody2DComponent& component)
+		{
+			
+			auto& body = component.RuntimeBody;
+
+			const char* BodyTypestring[] = { "Static", "Dynamic", "Kinematic" };
+			const char* CurrentBodyTypestring = BodyTypestring[(int)component.m_BodyType];
+			/*显示的内容*/
+			if (ImGui::BeginCombo("BodyType", CurrentBodyTypestring))
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					bool IsSelected = BodyTypestring[i] == CurrentBodyTypestring;
+					if (ImGui::Selectable(BodyTypestring[i], IsSelected)){
+						CurrentBodyTypestring = BodyTypestring[i];
+						component.m_BodyType = (RigidBody2DComponent::BodyType)i;
+					}
+
+					if (IsSelected) {
+						ImGui::SetItemDefaultFocus();	//貌似式设置一个默认选中的选项(为上一个项目)，显然我现在还不是很理解，到时候再查一下
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::Checkbox("Fix Rotation", &component.FixRotation);
+		});
+
+		BuildPerComponent<BoxCollider2DComponent>("2D Collition Box", entity, [](BoxCollider2DComponent& component)
+		{
+			auto& offset = component.Offset;
+			auto& size = component.Size;
+			ImGui::DragFloat2("Center Offset", glm::value_ptr(offset));
+			ImGui::DragFloat2("Box Size", glm::value_ptr(size));
+			ImGui::DragFloat("Densit", &component.Density, 0.02f, 0.0f, 1.0f);		/*可能有问题*/
+			ImGui::DragFloat("friction", &component.friction, 0.02f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution", &component.Restitution, 0.02f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.02f, 0.0f);
+		});
 	}
 }

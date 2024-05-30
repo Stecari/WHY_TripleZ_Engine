@@ -77,7 +77,7 @@
       <PrecompiledHeaderFile>tzpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;TZ_PLATFORM_WINDOWS;TZ_BUILD_DLL;_WINDLL;_UNICODE;UNICODE;TZ_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;D:\Vulkan\Vulkan1.3.283.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;Gitvender\Box2D\include;D:\Vulkan\Vulkan1.3.283.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -100,7 +100,7 @@
       <PrecompiledHeaderFile>tzpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;TZ_PLATFORM_WINDOWS;TZ_BUILD_DLL;_WINDLL;_UNICODE;UNICODE;TZ_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;D:\Vulkan\Vulkan1.3.283.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;Gitvender\Box2D\include;D:\Vulkan\Vulkan1.3.283.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -126,7 +126,7 @@
       <PrecompiledHeaderFile>tzpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;TZ_PLATFORM_WINDOWS;TZ_BUILD_DLL;_WINDLL;_UNICODE;UNICODE;TZ_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;D:\Vulkan\Vulkan1.3.283.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;Gitvender\spdlog\include;..\vender\GLFW\include;..\vender\Glad\include;Gitvender\ImGui;Gitvender\glm;Gitvender\stb_image;Gitvender\entt;Gitvender\yaml_cpp\include;Gitvender\ImGuizmo;Gitvender\Box2D\include;D:\Vulkan\Vulkan1.3.283.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -676,6 +676,9 @@
     </ProjectReference>
     <ProjectReference Include="Gitvender\ImGui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Gitvender\Box2D\Box2D.vcxproj">
+      <Project>{A434E80C-1049-10BE-D9CA-B31D459E0CEF}</Project>
     </ProjectReference>
     <ProjectReference Include="Gitvender\yaml_cpp\yaml-cpp.vcxproj">
       <Project>{88F1A057-74BE-FB62-9DD7-E90A890331F1}</Project>

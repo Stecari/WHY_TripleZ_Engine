@@ -2,8 +2,15 @@
 #include "tzpch.h"
 
 #include "Core.h"
-#include "spdlog/spdlog.h"
-#include "spdlog/fmt/ostr.h"
+/*		//Hazel2D里面有人加的
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/string_cast.hpp"
+*/
+// This ignores all warnings raised inside External headers
+#pragma warning(push, 0)
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
+#pragma warning(pop)
 
 namespace TribleZ
 {
@@ -11,18 +18,38 @@ namespace TribleZ
 	class TRIBLEZ_API Log
 	{
 	private:
-		static std::shared_ptr<spdlog::logger> m_CoreLogger;
-		static std::shared_ptr<spdlog::logger> m_ClientLogger;
+		static Ref<spdlog::logger> m_CoreLogger;
+		static Ref<spdlog::logger> m_ClientLogger;
 	public:
 		static void Init();
 
-		inline static std::shared_ptr < spdlog::logger >& GetCoreLogger() { return m_CoreLogger; }
-		inline static std::shared_ptr < spdlog::logger >& GetClientLogger() { return m_ClientLogger; }
+		static Ref<spdlog::logger>& GetCoreLogger() { return m_CoreLogger; }
+		static Ref<spdlog::logger>& GetClientLogger() { return m_ClientLogger; }
 	};
 
 
 }
 
+/*Hazel2D里面有人加的*/
+/*
+template<typename OStream, glm::length_t L, typename T, glm::qualifier Q>
+inline OStream& operator<<(OStream& os, const glm::vec<L, T, Q>& vector)
+{
+	return os << glm::to_string(vector);
+}
+
+template<typename OStream, glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+inline OStream& operator<<(OStream& os, const glm::mat<C, R, T, Q>& matrix)
+{
+	return os << glm::to_string(matrix);
+}
+
+template<typename OStream, typename T, glm::qualifier Q>
+inline OStream& operator<<(OStream& os, glm::qua<T, Q> quaternion)
+{
+	return os << glm::to_string(quaternion);
+}
+*/
 
 //Core层的日志输出等级宏定义
 #define TZ_CORE_TRACE(...)		::TribleZ::Log::GetCoreLogger()->trace(__VA_ARGS__)

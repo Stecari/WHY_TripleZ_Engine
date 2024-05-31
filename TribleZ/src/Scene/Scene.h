@@ -5,7 +5,10 @@
 #include "TribleZ_Core/TimeStep.h"
 #include "TribleZ_Core/Render/Editor_Camera.h"
 
+struct b2WorldId;
+#ifdef BOX2D_V2_4_CODE_REFERENCE
 class b2World;	//不能声明在namespace TribleZ里面，不然就变成了TribleZ::b2World()了，就不是Box2D的东西了
+#endif
 
 namespace TribleZ
 {
@@ -20,7 +23,12 @@ namespace TribleZ
 
 		uint32_t m_ViewWidth, m_ViewHeight;
 
+		b2WorldId* m_PhysicsWorldID = {}/*b2_nullWorldId*/;
+
+#ifdef BOX2D_V2_4_CODE_REFERENCE
 		b2World* m_PhysicsWorld = nullptr;		//这里创建一个b2World对象会被视为不完整的实例，但是创建一个b2World指针就可以
+#endif
+
 
 	public:
 		Scene();

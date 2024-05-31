@@ -19,3 +19,6 @@
 [submodule "TribleZ/Gitvender/Box2D"]
 	path = TribleZ/Gitvender/Box2D
 	url = https://github.com/Stecari/box2d
+[submodule "TribleZ/Gitvender/Box2D_3"]
+	path = TribleZ/Gitvender/Box2D_3
+	url = https://github.com/Stecari/box2d_c

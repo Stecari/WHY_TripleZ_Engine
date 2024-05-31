@@ -8,10 +8,15 @@
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective(透视，投影关系、比例)
 
-#include "box2d/b2_world.h"
-#include "box2d/b2_body.h"
-#include "box2d/b2_fixture.h"
-#include "box2d/b2_polygon_shape.h"
+#ifdef BOX2D_V2_4_CODE_REFERENCE
+#	include "box2d/b2_world.h"
+#	include "box2d/b2_body.h"
+#	include "box2d/b2_fixture.h"
+#	include "box2d/b2_polygon_shape.h"
+#endif
+#include "box2d/box2d.h"
+//#include "box2d/base.h"
+
 
 namespace TribleZ
 {
@@ -101,6 +106,28 @@ namespace TribleZ
 		}
 
 		/*---------------------物理引擎-------------------------------------------------------------*/
+		int SubCount = 6;
+
+		b2World_Step(*m_PhysicsWorldID, timestep, SubCount);
+		
+		auto view = m_Registry.view<RigidBody2DComponent>();
+		for (auto& ent : view)
+		{
+			Entity entity = { ent,this };
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+
+			b2BodyId* body = (b2BodyId*)rb2d.RuntimeBody;
+
+			const auto& position = b2Body_GetTransform(*body).p;
+			transform.Rotation.z = b2Body_GetAngle(*body);
+			transform.Translation.x = position.x;
+			transform.Translation.y = position.y;
+		}
+		/*---------------------物理引擎-------------------------------------------------------------*/
+
+#ifdef BOX2D_V2_4_CODE_REFERENCE
+		/*---------------------物理引擎-------------------------------------------------------------*/
 		const int32_t velocityIterations = 6;	//有点难形容，可能理解为速度？调小了更容易穿过物体
 		const int32_t positionIterations = 2;	//这个大概是粒子散度之类的
 
@@ -121,7 +148,7 @@ namespace TribleZ
 			transform.Translation.y = position.y;
 		}
 		/*---------------------物理引擎-------------------------------------------------------------*/
-
+#endif
 
 
 		BaseCamera* main_camera = nullptr;
@@ -185,6 +212,49 @@ namespace TribleZ
 
 	void Scene::OnRuntimeStart()
 	{
+		/*----------------------世界创建----------------------------------*/
+		b2Vec2 gravity = { 0.0f, -10.0f };
+		b2WorldDef worldDef = b2DefaultWorldDef();
+		worldDef.gravity = gravity;
+		b2WorldId worldId = b2CreateWorld(&worldDef);
+		/*----------------------世界创建----------------------------------*/
+
+		/*----------------------身体创建----------------------------------*/
+		b2BodyDef bodydef = b2DefaultBodyDef();
+		
+		auto view = m_Registry.view<RigidBody2DComponent>();
+		for (auto& ent : view)
+		{
+			Entity entity(ent, this);
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+
+			bodydef.type = RigidBodyTypeToBox2DType(rb2d.m_BodyType);
+			bodydef.position = { transform.Translation.x, transform.Translation.y };
+			bodydef.angle = transform.Rotation.z;
+			bodydef.fixedRotation = rb2d.FixRotation;
+
+			b2BodyId body = b2CreateBody(*m_PhysicsWorldID, &bodydef);
+			rb2d.RuntimeBody = &body;
+
+			if (entity.HasComponent<BoxCollider2DComponent>())
+			{
+				auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+
+				b2Polygon box = b2MakeBox(bc2d.Size.x, bc2d.Size.y);
+
+				b2ShapeDef shapedef = b2DefaultShapeDef();
+				shapedef.density = bc2d.Density;
+				shapedef.friction = bc2d.friction;
+				shapedef.restitution = bc2d.Restitution;
+				//shapedef.userData = 
+
+				b2ShapeId shape = b2CreatePolygonShape(body, &shapedef, &box);
+
+			}
+		}
+
+#ifdef BOX2D_V2_4_CODE_REFERENCE
 		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
 
 		b2BodyDef bodydef;
@@ -209,6 +279,7 @@ namespace TribleZ
 			{
 				auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
 
+
 				b2PolygonShape boxShape;
 
 				const auto& size = bc2d.Size;
@@ -227,12 +298,18 @@ namespace TribleZ
 				bc2d.RuntimeFixture = fixture;
 			}
 		}
+#endif
 	}
 
 	void Scene::OnRuntimeStop()
 	{
+		b2DestroyWorld(*m_PhysicsWorldID);
+		*m_PhysicsWorldID = b2_nullWorldId;
+
+#ifdef BOX2D_V2_4_CODE_REFERENCE
 		delete m_PhysicsWorld;
 		m_PhysicsWorld = nullptr;
+#endif
 	}
 
 

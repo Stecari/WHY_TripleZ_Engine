@@ -11,6 +11,7 @@ IncludeDir["entt"] = "TribleZ/Gitvender/entt"
 IncludeDir["stb_image"] = "TribleZ/Gitvender/stb_image"
 IncludeDir["yaml_cpp"] = "TribleZ/Gitvender/yaml_cpp/include"
 IncludeDir["Box2D"] = "TribleZ/Gitvender/Box2D/include"
+IncludeDir["Box2D_3"] = "TribleZ/Gitvender/Box2D_3/include"
 IncludeDir["ImGuizmo"] = "TribleZ/Gitvender/ImGuizmo"
 
 LibraryDir = {}

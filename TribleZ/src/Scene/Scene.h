@@ -2,6 +2,7 @@
 #include "TribleZ_Core/Core.h"
 #include "entt.hpp"
 
+#include "TribleZ_Core/UUID.h"
 #include "TribleZ_Core/TimeStep.h"
 #include "TribleZ_Core/Render/Editor_Camera.h"
 
@@ -36,11 +37,18 @@ namespace TribleZ
 		void OnRuntimeStop();
 		void OnRuntimeStart();
 
+		//创建一个实体，可以选择是否指定UUID
 		Entity CreateEntity(const std::string& name = std::string());	//每个实体包含一个entt::entity,和Scene*
+		Entity CreateEntity(UUID id, const std::string& name = std::string());
+		Entity CreateEntityWithUUID(UUID id, const std::string& name = std::string());
+		//复制一个实体，复制里面的组件
+		Entity DuplicateEntity(Entity entity);		//void Scene::DuplicateEntity(Entity entity)//Cherno写的，其实没差别
 		void DeleteEntity(Entity entity);
 
-		//z这里我发现我一直有有些盲区，就是我特别喜欢加&，这个根本不用加&，而且加不了的啊
 		Entity GetPrimaryCameraEntity();
+
+	public:
+		static Ref<Scene> Copy(const Ref<Scene>& otherScene);
 
 	private:
 		/*用特殊手段将函数体放在cpp文件里，这个用法比较少，可以关注一下*/

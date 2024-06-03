@@ -1,17 +1,34 @@
 #pragma once
+#include "TribleZ_Core/Render/SceneCamera.h"
+#include "TribleZ_Core/UUID.h"
+#include "TribleZ_Core/Render/Texture.h"
+
+//#include "Scene/ScriptableEntity.h"
+//这里记录一个bug问题：递归包含,直接编译会报一个“TribleZ::ScriptableEntity::m_Entity”使用未定义的 class“TribleZ::Entity”的错
+//由于Component.h里面包含了ScriptableEntity.h，ScriptableEntity.h里面又用到了Entity,但是Entity.h中又包含了Component.h
+//所以最后这个Component.h复制进来的时候，ScriptableEntity写在了Entity的上面，就未定义了
+//一种解决方法是不在Component.h中包含完整的ScriptableEntity.h
+// 改用对ScriptableEntity的声明，Component.h中也就不存在对Entity的定义了
+//这种解决方式是基于我们在这个文件里使用的是ScriptableEntity的指针，不然是不行的
+
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-#include "TribleZ_Core/Render/SceneCamera.h"
-#include "Scene/ScriptableEntity.h"
-
-#include "TribleZ_Core/Render/Texture.h"
 
 namespace TribleZ
 {
+	struct IDComponent
+	{
+		UUID ID;
+
+		IDComponent() = default;
+		IDComponent(const IDComponent&) = default;
+		IDComponent(UUID id) : ID(id) {}
+	};
+
 	struct SpriteRendererComponent
 	{
 		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
@@ -84,6 +101,7 @@ namespace TribleZ
 	};
 
 	//应该就是实现wasd移动，滚轮缩放等等功能(脚本)的组件
+	class ScriptableEntity;
 	struct NativeScriptComponent
 	{
 		//实体

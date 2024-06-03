@@ -617,6 +617,7 @@
     <ClInclude Include="src\TribleZ_Core\Render\UniformBuffer.h" />
     <ClInclude Include="src\TribleZ_Core\Render\VertexArray.h" />
     <ClInclude Include="src\TribleZ_Core\TimeStep.h" />
+    <ClInclude Include="src\TribleZ_Core\UUID.h" />
     <ClInclude Include="src\TribleZ_Core\Window.h" />
     <ClInclude Include="src\Utils\PlatformUtils.h" />
     <ClInclude Include="src\tzpch.h" />
@@ -662,6 +663,7 @@
     <ClCompile Include="src\TribleZ_Core\Render\Texture.cpp" />
     <ClCompile Include="src\TribleZ_Core\Render\UniformBuffer.cpp" />
     <ClCompile Include="src\TribleZ_Core\Render\VertexArray.cpp" />
+    <ClCompile Include="src\TribleZ_Core\UUID.cpp" />
     <ClCompile Include="src\TribleZ_Core\Window.cpp" />
     <ClCompile Include="src\tzpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

@@ -9,7 +9,8 @@ namespace TribleZ
 		:m_EntityHandle(handle),m_Scene(scene)
 	{}
 
-	uint64_t Entity::GetUniqueID() const
+	/*在我们有了UUID组件后就不需要这个了*/
+	uint64_t Entity::GetUniqueHandleID() const
 	{
 		return (uint64_t)m_EntityHandle;
 	}

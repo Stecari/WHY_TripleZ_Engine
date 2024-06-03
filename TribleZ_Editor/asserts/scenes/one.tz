@@ -1,15 +1,6 @@
 Scene: Scene's name
 Entities:
-  - Entity: 15151515151
-    TagComponent:
-      Tag: queb
-    TransformComponent:
-      Translation: [40.0717812, 1.18679428, 434.851379]
-      Rotation: [-0.189233094, -0.476248562, -2.84292555]
-      Scale: [127.288902, 149.004105, 195.70108]
-    SpriteRendererComponent:
-      Color: [0.284427911, 0.672597885, 0.169944659, 1]
-  - Entity: 15151515151
+  - Entity: 2
     TagComponent:
       Tag: Camera
     CameraComponent:
@@ -27,3 +18,12 @@ Entities:
       Translation: [0, 0, 955]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+  - Entity: 1
+    TagComponent:
+      Tag: queb
+    TransformComponent:
+      Translation: [40.0717812, 1.18679428, 434.851379]
+      Rotation: [-0.189233094, -0.476248562, -2.84292555]
+      Scale: [127.288902, 149.004105, 195.70108]
+    SpriteRendererComponent:
+      Color: [0.284427911, 0.672597885, 0.169944659, 1]

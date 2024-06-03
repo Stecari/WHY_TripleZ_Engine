@@ -76,9 +76,9 @@ namespace TribleZ
 	{
 		out << YAML::BeginMap;	//开始对Entity键值对的映射
 		out << YAML::Key << "Entity";
-		uint64_t EntityID = entity.GetUniqueID();
-		//out << YAML::Value << "15151515151";	//值是这个entity的唯一ID号
-		out << YAML::Value << std::to_string(EntityID);	//值是这个entity的唯一ID号
+		uint64_t EntityID = entity.GetUUID();
+
+		out << YAML::Value << EntityID;	//值是这个entity的唯一ID号
 
 		//开始挨个序列化entity
 		if (entity.HasComponent<TagComponent>())
@@ -168,7 +168,7 @@ namespace TribleZ
 	void SceneSerializer::Serializer(const std::string& filepath)
 	{
 		YAML::Emitter yaml_out;
-		yaml_out << YAML::BeginMap;	/*---------------------------------------------------------------------开始映射------*/
+		yaml_out << YAML::BeginMap;	/*-----------------------------------------------------------------开始映射------*/
 		yaml_out << YAML::Key << "Scene" << YAML::Value << "Scene's name";		//记录一个键值对
 									//一个序列sequence， 本质上就是一个数组
 		yaml_out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;/*--------------------------------开始序列------*/
@@ -187,7 +187,7 @@ namespace TribleZ
 			SerializeEntity(yaml_out, entity);
 		});
 		yaml_out << YAML::EndSeq;/*-----------------------------------------------------------------------------结束序列------*/
-		yaml_out << YAML::EndMap;/*-------------------------------------------------------------------------结束映射------*/
+		yaml_out << YAML::EndMap;/*---------------------------------------------------------------------结束映射------*/
 
 		std::ofstream fileout(filepath);
 		fileout << yaml_out.c_str();
@@ -226,8 +226,9 @@ namespace TribleZ
 				}
 				TZ_CORE_TRACE("Deserializer entity[{0}] with ID: {1}", tagname, uuid);
 
-				//m_Scene->CreateEntity(uuid, name);		//后面有空做一个这个
-				Entity deserializeEntity = m_Scene->CreateEntity(tagname);
+				//Entity deserializeEntity = m_Scene->CreateEntity(tagname);
+				Entity deserializeEntity = m_Scene->CreateEntity(uuid, tagname);
+
 
 				auto transformComponent= entity["TransformComponent"];
 				if (transformComponent)

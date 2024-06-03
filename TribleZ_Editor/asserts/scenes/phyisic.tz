@@ -1,6 +1,6 @@
 Scene: Scene's name
 Entities:
-  - Entity: 2
+  - Entity: 17337585753955469162
     TagComponent:
       Tag: Main_Camera
     CameraComponent:
@@ -18,7 +18,7 @@ Entities:
       Translation: [0, 2.34101391, 20.2041264]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-  - Entity: 1
+  - Entity: 10033924406397653279
     TagComponent:
       Tag: SecondSquare
     TransformComponent:
@@ -37,11 +37,11 @@ Entities:
       friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
-  - Entity: 0
+  - Entity: 7071637162622353018
     TagComponent:
       Tag: Square
     TransformComponent:
-      Translation: [1.682675, 1.01888418, 1.1920929e-07]
+      Translation: [5.0246706, 1.8516109, 1.1920929e-07]
       Rotation: [0, 0, -1.57112122]
       Scale: [0.999999821, 0.999999821, 1]
     SpriteRendererComponent:

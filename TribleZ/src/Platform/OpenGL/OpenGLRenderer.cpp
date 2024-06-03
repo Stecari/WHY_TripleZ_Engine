@@ -23,11 +23,14 @@ namespace TribleZ
 	void OpenGLRendererAPI::Clear()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClearBufferiv()
 	}
 
 	void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)
 	{
 		glClearColor(color.r, color.g, color.b, color.a);
+		glClearDepth(1.0);
+		glClearStencil(1);		//有问题，我自己加的，NewScene后帧缓冲区不更新
 	}
 
 

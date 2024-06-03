@@ -16,24 +16,27 @@ namespace TribleZ
 	class Editor_Layer : public Layer
 	{
 	private:
-		Renderer2D			m_Flag_Renderer;
+		Renderer2D				m_Flag_Renderer;
 
-		ShaderLibrary		ShaderLib_2D;
+		ShaderLibrary			ShaderLib_2D;
 
-		Ref<VertexArray>	VertexArray_2D;
+		Ref<VertexArray>		VertexArray_2D;
 
-		Ref<Texture2D>		Texture_2D;
-		Ref<Texture2D>		SpriteSheet_tex;
-		Ref<SubTexture2D>	subTex;
-
-		Ref<Scene>			ActiveScene;
-		Ref<FrameBuffer>	FrameBuffer_2D;
-
-		Ref<Texture2D>		m_IconPlay;
-		Ref<Texture2D>		m_IconStop;
-
+		Ref<Texture2D>			Texture_2D;
+		Ref<Texture2D>			SpriteSheet_tex;
+		Ref<SubTexture2D>		subTex;
+		//Scene场景
+		Ref<Scene>				m_ActiveScene;
+		Ref<Scene>				m_EditorScene;
+		Ref<FrameBuffer>		FrameBuffer_2D;
+		//当前打开的Scene的路径
+		std::filesystem::path	m_EditorScenePath;
+		//图标
+		Ref<Texture2D>			m_IconPlay;
+		Ref<Texture2D>			m_IconStop;
+		//相机
+		Editor_Camera			m_EditorCamera;
 		OrthoGraphicCameraContraller CameraController;
-		Editor_Camera m_EditorCamera;
 
 #ifdef DELETE_CODE
 		//实体
@@ -44,8 +47,8 @@ namespace TribleZ
 		bool main_cam = true;
 #endif
 		//粒子系统
-		ParticleSystem m_ParticleSystem;
-		ParticleProps m_Particle;
+		ParticleSystem			m_ParticleSystem;
+		ParticleProps			m_Particle;
 		//子模块
 		std::unordered_map<char, Ref<TribleZ::SubTexture2D>> m_SubTexMap;
 		//视口大小
@@ -53,8 +56,8 @@ namespace TribleZ
 		glm::vec2 m_ViewSize;
 		uint32_t Map_Width, Map_Height;
 		//画面面板
-		SceneHierarchyPanel m_SceneHierarchyPanel;
-		ContentBrowserPanels m_ContentBrowserPanels;
+		SceneHierarchyPanel		m_SceneHierarchyPanel;
+		ContentBrowserPanels	m_ContentBrowserPanels;
 		//窗口选中和鼠标悬停
 		bool m_ViewPortFocused;
 		bool m_ViewPortHovered;
@@ -87,11 +90,13 @@ namespace TribleZ
 		bool OnEventMouseButtonPressed(EventMouseButtonPressed& event);
 
 		void SaveSceneAs();
+		void SaveScene();
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
 		void NewScene();
 
 		void OnScenePlay();
 		void OnSceneEdit();
+		void OnDuplicatedEntity();
 	};
 }

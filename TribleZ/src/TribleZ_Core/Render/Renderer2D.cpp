@@ -206,8 +206,9 @@ namespace TribleZ
 
 	void Renderer2D::Flush()
 	{
-		//if (m_DataBase.Quad_IndexCount == 0)
-			//return; // Nothing to draw
+		if (m_DataBase.Quad_IndexCount == 0) {		//没东西画，之前这里没加，导致清除了Scene之后哪怕Index = 0依旧会渲染上一帧的图案
+			return;
+		}
 
 		for (int i = 0; i < m_DataBase.TextureSlotIndex; i++) {		//绑定纹理									
 			m_DataBase.TextureSlotBase[i]->Bind(i);	//绑定i号插槽   

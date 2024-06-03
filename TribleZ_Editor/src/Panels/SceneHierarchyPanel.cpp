@@ -69,7 +69,6 @@ namespace TribleZ
 		ImGui::End();
 	}
 
-	//void SceneHierarchyPanel::DrawEntityNode(Entity& entity)	//cherno写的是没有&的下面那个，但是我觉得加上&也可以，先放着好了
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
 		std::string tag = entity.GetComponent<TagComponent>().Tag;
@@ -96,6 +95,7 @@ namespace TribleZ
 		if (ImGui::BeginPopupContextItem(0, ImGuiPopupFlags_MouseButtonRight))	//创建一个点击 对应Item后弹出的窗口，flag指定了点击哪个键
 		{
 			if (ImGui::MenuItem("Delete Entity")) {
+				m_SelectionContext = entity;	//没选中直接删的情况下不加这个会出现非法指针操作
 				delete_entity_flag = true;
 			}
 			ImGui::EndPopup();
@@ -117,7 +117,6 @@ namespace TribleZ
 
 		if (delete_entity_flag) {
 			m_Context->DeleteEntity(m_SelectionContext);	//删除选中的Item的entity
-			/*这个有点bug，我选择了一个，然后右键另一个Item,删除掉的还是选中的这个*/
 			if (m_SelectionContext == entity) {			//这个是我想不到的
 				m_SelectionContext = {};				//释放当前选中的Item的指针（不释放会出现非法空指针）
 			}
@@ -253,7 +252,8 @@ namespace TribleZ
 	}
 
 	void SceneHierarchyPanel::DrawComponent(Entity entity)
-	{
+	{	/*解决了，在转换ActiveScene和EditorScene的时候要切换Context,就是要切换选择的Scene，在Runtime模式里修改的就是Editor模式的参数*/
+		//有问题，在Runtime时如果用ImGuizmo改变了实体的姿态后切换到Editor状态时这里会有问题，不过考虑到真时情况，Runtime的时候也不因该改变物体姿态，不知道用脚本改行不行
 		if (entity.HasComponent<TagComponent>())		//这里有一个bug，当正在改变Tag的过程中忽然中途切换到另一个组件时，会改变另一个组件的Tag
 		{
 			auto& tag = entity.GetComponent<TagComponent>().Tag;

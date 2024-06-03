@@ -1,6 +1,6 @@
 Scene: Scene's name
 Entities:
-  - Entity: 1
+  - Entity: 14999180665909234693
     TagComponent:
       Tag: buleONE
     TransformComponent:
@@ -9,7 +9,7 @@ Entities:
       Scale: [9.3138237, 7.70773172, 863.999878]
     SpriteRendererComponent:
       Color: [0.171806365, 0.392858058, 0.846975088, 1]
-  - Entity: 0
+  - Entity: 2668107658001710951
     TagComponent:
       Tag: firstone
     TransformComponent:

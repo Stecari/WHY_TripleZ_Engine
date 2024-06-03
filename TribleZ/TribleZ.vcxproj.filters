@@ -1488,6 +1488,7 @@
     <ClInclude Include="src\tzpch.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\TribleZ_Core\UUID.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Gitvender\ImGuizmo\ImGuizmo.cpp">
@@ -1610,5 +1611,6 @@
     <ClCompile Include="src\tzpch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\TribleZ_Core\UUID.cpp" />
   </ItemGroup>
 </Project>

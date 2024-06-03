@@ -2,6 +2,7 @@
 #include "Scene.h"
 
 #include "TribleZ_Core/Render/Renderer2D.h"
+#include "ScriptableEntity.h"
 
 #include "Entity.h"
 #include "Component.h"
@@ -27,6 +28,35 @@ namespace TribleZ
 		TZ_CORE_ASSERT("UNKOWN BODY TYPE!");
 		return b2BodyType::b2_staticBody;
 	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////复制组件，工具函数//////////////////////////////////////////////////////////////////////////////////////////////////////
+	//针对注册表间的组件复制迁移，可以理解为复制注册表
+	template<typename Component>
+	static void CopyComponent(const entt::registry& src, entt::registry& dst, const std::unordered_map<UUID, entt::entity>& enttMap)
+	{
+		auto view = src.view<Component>();
+		for (auto& enti : view)
+		{
+			UUID uuid = src.get<IDComponent>(enti).ID;
+			TZ_CORE_ASSERT(enttMap.find(uuid) != enttMap.end());
+			entt::entity entiHandle = enttMap.at(uuid);
+
+			auto& component = src.get<Component>(entiHandle);	//拿到 指定句柄的实体 的 指定组件
+			dst.emplace_or_replace<Component>(entiHandle, component);
+		}
+	}
+	//针对实体间的组件复制迁移
+	template<typename Component>
+	static void CopyComponentIfExists(Entity src, Entity dst)
+	{
+		if (src.HasComponent<Component>()) {
+			dst.AddOrRepalceComponent<Component>(src.GetComponent<Component>());
+		}
+	}
+	///////复制组件，工具函数//////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 	Scene::Scene()
 	{
@@ -62,9 +92,7 @@ namespace TribleZ
 	}
 
 	Scene::~Scene()
-	{
-
-	}
+	{}
 
 	void Scene::OnUpdataEditor(TimeStep timestep, Editor_Camera Edi_Camera)
 	{
@@ -121,7 +149,6 @@ namespace TribleZ
 			transform.Translation.y = position.y;
 		}
 		/*---------------------物理引擎-------------------------------------------------------------*/
-
 
 
 		BaseCamera* main_camera = nullptr;
@@ -183,6 +210,8 @@ namespace TribleZ
 		}
 	}
 
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////开始运行，创建物理系统//////////////////////////////////////////////////////////////////////////////////////////////////
 	void Scene::OnRuntimeStart()
 	{
 		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
@@ -228,39 +257,105 @@ namespace TribleZ
 			}
 		}
 	}
-
 	void Scene::OnRuntimeStop()
 	{
 		delete m_PhysicsWorld;
 		m_PhysicsWorld = nullptr;
 	}
+	///////开始运行，创建物理系统//////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-	Entity Scene::CreateEntity(const std::string& name)
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////创建,复制，删除实体//////////////////////////////////////////////////////////////////////////////////////////////////////////
+	Entity Scene::CreateEntity(UUID id, const std::string& name)
 	{
 		//每个实体包含一个entt::entity,和Scene*
 		Entity entity = { m_Registry.create(), this };//this就是返回使用该函数的实例的指针
-		//默认每个实体有一个变换组件和Tag组件
+		//每个实体默认有 变换组件 Tag UUID
+		entity.AddComponent<IDComponent>(id);
 		entity.AddComponent<TransformComponent>();
 		auto& tag = entity.AddComponent<TagComponent>();
 		tag.Tag = name.empty() ? "Entity" : name;
 		return entity;
 	}
+	Entity Scene::CreateEntity(const std::string& name)
+	{
+		return CreateEntity(UUID(), name);
+	}
+	/*
+	Entity Scene::CreateEntity(const std::string& name)
+	{
+		//每个实体包含一个entt::entity,和Scene*
+		Entity entity = { m_Registry.create(), this };//this就是返回使用该函数的实例的指针
+		//每个实体默认有 变换组件 Tag UUID
+		entity.AddComponent<TransformComponent>();
+		entity.AddComponent<IDComponent>();
+		auto& tag = entity.AddComponent<TagComponent>();
+		tag.Tag = name.empty() ? "Entity" : name;
+		return entity;
+	}
+	*/
+	Entity Scene::CreateEntityWithUUID(UUID id, const std::string& name)
+	{
+		return CreateEntity(id, name);
+	}
+	Entity Scene::DuplicateEntity(Entity entity)		//void Scene::DuplicateEntity(Entity entity)	//Cherno写的，其实没差别
+	{
+		auto& name = entity.GetName();
+		Entity newEntity = CreateEntity(name);
 
-	//void Scene::DeleteEntity(const Entity& entity)		//我喜欢这样
-	//{
-	//	m_Registry.destroy(entity);		//自己写的隐式转换
-	//}
+		CopyComponentIfExists<TransformComponent>(entity, newEntity);
+		CopyComponentIfExists<SpriteRendererComponent>(entity, newEntity);
+		CopyComponentIfExists<CameraComponent>(entity, newEntity);
+		CopyComponentIfExists<NativeScriptComponent>(entity, newEntity);
+		CopyComponentIfExists<RigidBody2DComponent>(entity, newEntity);
+		CopyComponentIfExists<BoxCollider2DComponent>(entity, newEntity);
+
+		return newEntity;
+	}
 	void Scene::DeleteEntity(Entity entity)
 	{
 		m_Registry.destroy(entity);		//自己写的隐式转换
 	}
+	///////创建和删除实体//////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+	
 
+	Ref<Scene> Scene::Copy(const Ref<Scene>& otherScene)
+	{
+		Ref<Scene> newScene = CreatRef<Scene>();
 
+		newScene->m_ViewWidth = otherScene->m_ViewWidth;
+		newScene->m_ViewHeight = otherScene->m_ViewHeight;
 
+		auto& srcRegistry = otherScene->m_Registry;
+		auto& dstRegistry = newScene->m_Registry;
+		std::unordered_map<UUID, entt::entity> enttMap;
 
+		//收集原场景中各个实体的UUID，在目标场景中创建出那么多实体
+		auto entView = srcRegistry.view<IDComponent>();
+		for (auto& enti : entView)
+		{
+			UUID uuid = srcRegistry.get<IDComponent>(enti).ID;
+			std::string name = srcRegistry.get<TagComponent>(enti).Tag;
+			Entity newEntity= newScene->CreateEntityWithUUID(uuid, name);
+
+			enttMap[uuid] = enti;
+		}
+
+		//复制组件，除了ID和Tag
+		CopyComponent<TransformComponent>(srcRegistry, dstRegistry, enttMap);
+		CopyComponent<SpriteRendererComponent>(srcRegistry, dstRegistry, enttMap);
+		CopyComponent<CameraComponent>(srcRegistry, dstRegistry, enttMap);
+		CopyComponent<NativeScriptComponent>(srcRegistry, dstRegistry, enttMap);
+		CopyComponent<RigidBody2DComponent>(srcRegistry, dstRegistry, enttMap);
+		CopyComponent<BoxCollider2DComponent>(srcRegistry, dstRegistry, enttMap);
+
+		return newScene;
+	}
 
 
 
@@ -277,7 +372,10 @@ namespace TribleZ
 	}
 	/*------相当于是上面那个模板函数的扩展形式-----------------------------------------------------------*/
 	template<>
-	void Scene::OnComponentAdding<TagComponent>(Entity entity, TagComponent& component)	{}
+	void Scene::OnComponentAdding<IDComponent>(Entity entity, IDComponent& component) {}
+
+	template<>
+	void Scene::OnComponentAdding<TagComponent>(Entity entity, TagComponent& component) {}
 
 	template<>
 	void Scene::OnComponentAdding<TransformComponent>(Entity entity, TransformComponent& component)	{}

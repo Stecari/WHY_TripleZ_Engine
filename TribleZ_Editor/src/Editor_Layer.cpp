@@ -90,14 +90,14 @@ namespace TribleZ
 		CameraController.SetZoomLevel(720.0f * 2);
 
 		//场景初始化
-		ActiveScene = CreatRef<Scene>();
+		m_ActiveScene = CreatRef<Scene>();
 
 		//命令行 ??
 		auto commondLineArgs = Application::GetInstence().GetCommandLineArgs();
 		if (commondLineArgs.Count > 1)
 		{
 			auto scenefilePath = commondLineArgs[1];
-			SceneSerializer serializer(ActiveScene);
+			SceneSerializer serializer(m_ActiveScene);
 			serializer.Deserializer(scenefilePath);
 		}
 
@@ -105,18 +105,18 @@ namespace TribleZ
 		
 #if 0
 		//初始化实体
-		m_Square = ActiveScene->CreateEntity("Square");		//自带一个变换组件和Tag组件
+		m_Square = m_ActiveScene->CreateEntity("Square");		//自带一个变换组件和Tag组件
 		m_Square.GetComponent<TransformComponent>().Scale = glm::vec3{ 400.0f };		//默认是1.0的单位矩阵，但是假如默认是400，但由于相机实体和物体同时用用一个变换组件，渲染的时候变换的数值会被平方掉
 		m_Square.AddComponent<SpriteRendererComponent>();
 
-		m_second_Square = ActiveScene->CreateEntity("SecondSquare");
+		m_second_Square = m_ActiveScene->CreateEntity("SecondSquare");
 		m_second_Square.GetComponent<TransformComponent>().Scale = glm::vec3{ 400.0f };
 		m_second_Square.AddComponent<SpriteRendererComponent>(glm::vec4{0.8f, 0.3f, 0.2f, 1.0f });
 
-		Camera_Entity = ActiveScene->CreateEntity("Main_Camera");;
+		Camera_Entity = m_ActiveScene->CreateEntity("Main_Camera");;
 		Camera_Entity.AddComponent<CameraComponent>();
 
-		Obj_Camera = ActiveScene->CreateEntity("Object_Camera");;
+		Obj_Camera = m_ActiveScene->CreateEntity("Object_Camera");;
 		Obj_Camera.AddComponent<CameraComponent>();
 		Obj_Camera.GetComponent<CameraComponent>().Primary = false;
 
@@ -164,7 +164,7 @@ namespace TribleZ
 #endif
 
 		//画面分层面板初始化
-		m_SceneHierarchyPanel.SetContext(ActiveScene);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
 
 	void Editor_Layer::OnDetach()
@@ -185,7 +185,7 @@ namespace TribleZ
 			FrameBuffer_2D->Resize((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);
 			CameraController.ResizeView(m_ViewSize.x, m_ViewSize.y);
 			m_EditorCamera.SetViewportSize(m_ViewSize.x, m_ViewSize.y);
-			ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);
+			m_ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);
 		}
 		
 
@@ -220,12 +220,12 @@ namespace TribleZ
 				}
 				m_EditorCamera.OnUpdata(time_step);
 
-				ActiveScene->OnUpdataEditor(time_step, m_EditorCamera);
+				m_ActiveScene->OnUpdataEditor(time_step, m_EditorCamera);
 				break;
 			}
 			case SceneState::Play:
 			{
-				ActiveScene->OnUpdataRuntime(time_step);
+				m_ActiveScene->OnUpdataRuntime(time_step);
 				break;
 			}
 		}
@@ -248,7 +248,7 @@ namespace TribleZ
 				m_HoverdEntity = {};
 			}
 			else{
-				m_HoverdEntity = { (entt::entity)Pixcel, ActiveScene.get() };
+				m_HoverdEntity = { (entt::entity)Pixcel, m_ActiveScene.get() };
 				//TZ_CORE_INFO("Pixcel: {0}", Pixcel);
 			}
 		}
@@ -370,6 +370,9 @@ namespace TribleZ
 				if (ImGui::MenuItem("Save As ...", "Shift+Ctrl+S")){
 					SaveSceneAs();
 				}
+				if (ImGui::MenuItem("Save File", "Ctrl+S")) {
+					SaveScene();
+				}
 
 				if (ImGui::MenuItem("Exit")) { Application::GetInstence().Close(); }
 
@@ -489,7 +492,7 @@ namespace TribleZ
 
 				//获取主相机参数
 #ifdef RUNTIME
-				Entity cameraEntity = ActiveScene->GetPrimaryCameraEntity();
+				Entity cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
 				const auto& PrimaryCamera = cameraEntity.GetComponent<CameraComponent>().Camera;
 				const glm::mat4& CameraProjection = PrimaryCamera.GetProjection();
 				glm::mat4 CameraView = inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
@@ -591,19 +594,6 @@ namespace TribleZ
 		ImGui::End();
 	}
 
-	void Editor_Layer::OnScenePlay()
-	{
-		m_SceneState = SceneState::Play;
-		ActiveScene->OnRuntimeStart();
-	}
-
-	void Editor_Layer::OnSceneEdit()
-	{
-		m_SceneState = SceneState::Edit;
-		ActiveScene->OnRuntimeStop();
-
-	}
-
 	void Editor_Layer::OnEvent(Event& event)
 	{
 		TZ_PROFILE_FUNCTION_SIG();
@@ -627,19 +617,38 @@ namespace TribleZ
 		switch (event.GetKeyCode())
 		{
 			//file dialogs
+			//打开文件
 			case TZ_KEY_O:
 			{
 				if (Ctrl) { OpenScene(); }
 				break;
 			}
+			//新建场景
 			case TZ_KEY_N:
 			{
 				if (Ctrl) { NewScene(); }
 				break;
 			}
+			//保存或者另存为
 			case TZ_KEY_S:
 			{
-				if (Shift && Ctrl) { SaveSceneAs(); }
+				if (Ctrl)
+				{
+					if (Shift){
+						SaveSceneAs();
+					}
+					else{
+						SaveScene();
+					}
+				}
+				break;
+			}
+			//复制
+			case TZ_KEY_D:
+			{
+				if (Ctrl) {
+					OnDuplicatedEntity();
+				}
 				break;
 			}
 			//Guizmo
@@ -675,15 +684,29 @@ namespace TribleZ
 			}
 		return false;
 	}
+	//另存为
 	void Editor_Layer::SaveSceneAs()
 	{
 		std::string file_path = FileDialogs::SaveFile("TribleZ Scene (*.tz)\0*.tz\0");
 		if (!file_path.empty())
 		{
-			SceneSerializer TZ_Serializer(ActiveScene);
+			SceneSerializer TZ_Serializer(m_ActiveScene);
 			TZ_Serializer.Serializer(file_path);
 		}
 	}
+	//保存
+	void Editor_Layer::SaveScene()
+	{
+		if (!m_EditorScenePath.empty())
+		{
+			SceneSerializer TZ_Serializer(m_ActiveScene);
+			TZ_Serializer.Serializer(m_EditorScenePath.string());
+		}
+		else{
+			SaveSceneAs();
+		}
+	}
+	//打开
 	void Editor_Layer::OpenScene()
 	{
 		std::string file_path = FileDialogs::OpenFile("TribleZ Scene (*.tz)\0*.tz\0");	//这个就是自定义文件过滤器的格式 TribleZ Scene (*.tz) \0*.tz\0		比如这里就会将所有(*)以.tz为后缀的文件显示出来
@@ -692,10 +715,14 @@ namespace TribleZ
 			OpenScene(file_path);
 		}
 	}
+	//打开
 	void Editor_Layer::OpenScene(const std::filesystem::path& path)
 	{
-		if (path.extension().string() != ".tz")
-		{
+		if (m_SceneState != SceneState::Edit) {
+			OnSceneEdit();
+		}
+
+		if (path.extension().string() != ".tz"){
 			TZ_CORE_WARN("Could not load {0} - not a scene file", path.filename().string());
 			return;
 		}
@@ -704,28 +731,63 @@ namespace TribleZ
 		SceneSerializer TZ_Serializer(NewScene);
 		if (TZ_Serializer.Deserializer(path.string()))
 		{
-			ActiveScene = NewScene;
-			ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);	//初始化视口大小防止相机缩放比出问题
-			m_SceneHierarchyPanel.SetContext(ActiveScene);	//这里本来里面没有指针刷新，所以会出问题
+			m_EditorScene = NewScene;
+			m_EditorScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);	//初始化视口大小防止相机缩放比出问题
+			m_SceneHierarchyPanel.SetContext(m_EditorScene);							//这里本来里面没有指针刷新，所以会出问题
+
+			m_ActiveScene = m_EditorScene;
+			m_EditorScenePath = path;
 		}
 	}
+	//新建
 	void Editor_Layer::NewScene()
 	{
 #if 0
 		std::string file_path = FileDialogs::SaveFile("TribleZ Scene (*.tz)\0*.tz\0");
 		if (!file_path.empty())	//路径不为空，说明成功进行了															/*  被两个 \0 夹起来的部分就是真正的过滤器*/
 		{
-			ActiveScene = CreatRef<Scene>();	//创建一个新的场景
-			ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);	//初始化视口大小防止相机缩放比出问题
-			m_SceneHierarchyPanel.SetContext(ActiveScene);
+			m_ActiveScene = CreatRef<Scene>();	//创建一个新的场景
+			m_ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);	//初始化视口大小防止相机缩放比出问题
+			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
-			SceneSerializer TZ_Serializer(ActiveScene);
+			SceneSerializer TZ_Serializer(m_ActiveScene);
 			TZ_Serializer.Serializer(file_path);
 		}
 #endif
-		ActiveScene = CreatRef<Scene>();
-		ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);
-		m_SceneHierarchyPanel.SetContext(ActiveScene);
+		m_ActiveScene = CreatRef<Scene>();
+		m_ActiveScene->ResizeView((uint32_t)m_ViewSize.x, (uint32_t)m_ViewSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	}
+
+	void Editor_Layer::OnScenePlay()
+	{
+		m_SceneState = SceneState::Play;
+
+		m_ActiveScene = Scene::Copy(m_EditorScene);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_ActiveScene->OnRuntimeStart();
+	}
+
+	void Editor_Layer::OnSceneEdit()
+	{
+		m_SceneState = SceneState::Edit;
+
+		m_ActiveScene->OnRuntimeStop();
+		m_SceneHierarchyPanel.SetContext(m_EditorScene);
+		m_ActiveScene = m_EditorScene;
+	}
+
+	void Editor_Layer::OnDuplicatedEntity()
+	{
+		if (m_SceneState != SceneState::Edit){
+			return;
+		}
+
+		Entity selectEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selectEntity){
+			Entity newEntity = m_EditorScene->DuplicateEntity(selectEntity);
+			m_SceneHierarchyPanel.SetSelectionEntity(newEntity);
+		}
 	}
 }
 
